@@ -19,7 +19,11 @@ public class Cell {
 
     public boolean is_taken() {return this.piece != null;}
 
-    public void take(Piece piece) {this.piece = piece;}
+    public void move_piece(Piece piece) {this.piece = piece;}
+
+    public Piece get_piece(){return this.piece;}
+
+    public void empty_cell() { this.piece = null; }
 
     public Color cell_color() {return this.color;}
 
