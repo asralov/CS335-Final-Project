@@ -12,6 +12,12 @@ public class Cell {
         this.x = x;
         this.y = y;
     }
+    
+    public Cell(Cell copy) {
+    	this.x = copy.x;
+    	this.y = copy.y;
+    	this.piece = new Piece(piece);
+    }
 
     public int x_cord() {return this.x;}
     
