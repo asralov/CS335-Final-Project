@@ -9,8 +9,8 @@ public class GameBoard {
     public GameBoard()
     {
         init_board(); // getting a board
-        // init_white()  // initialize the white player pieces
-        // init_black()  // initialize the black player pieces
+        init_white();  // initialize the white player pieces
+        init_black();  // initialize the black player pieces
     }
 
     private void init_board()
@@ -28,6 +28,37 @@ public class GameBoard {
     }
 
 
+    public void init_white() {
+    	for (int i = 0; i < 3; i++) {
+    		for (int j = 0; j < 8; j++) {
+    			if (i % 2 == 0 && j % 2 == 1) {
+    				board[i][j].move_piece(new Piece(Color.WHITE, i, j));
+    			} else if (i % 2 == 1 && j % 2 == 0){
+    				board[i][j].move_piece(new Piece(Color.WHITE, i, j));
+    			}
+    		}
+    	}
+    }
+    
+    public void init_black() {
+    	for (int i = 5; i < 8; i++) {
+    		for (int j = 0; j < 8; j++) {
+    			if (i % 2 == 0 && j % 2 == 1) {
+    				board[i][j].move_piece(new Piece(Color.BLACK, i, j));
+    			} else if (i % 2 == 1 && j % 2 == 0){
+    				board[i][j].move_piece(new Piece(Color.BLACK, i, j));
+    			}
+    		}
+    	}
+    }
+    
+    public int getWhitePieces() {
+    	return 0; 
+    }
+    
+    public int getBlackPieces() {
+    	return 0; 
+    }
 
 
     // if the move is valid
