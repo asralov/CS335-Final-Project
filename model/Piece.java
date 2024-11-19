@@ -60,7 +60,7 @@ public class Piece {
             int currentCol = this.column + colStep;
 
             while (currentRow != newRow && currentCol != newCol) {
-                if (board.getCell(currentRow, currentCol).isOccupied()) {
+                if (board.get_cell(currentRow, currentCol).is_taken()) {
                     return false; 
                 }
                 currentRow += rowStep;
@@ -80,7 +80,7 @@ public class Piece {
                 return false; 
             }
             
-            if (board.getCell(newRow, newCol).isOccupied())
+            if (board.get_cell(newRow, newCol).is_taken())
             	return false;
             else
             	return true;

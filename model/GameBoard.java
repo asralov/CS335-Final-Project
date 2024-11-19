@@ -46,6 +46,17 @@ public class GameBoard {
         this.board[x][y].move_piece(piece);
     }
 
+    public Cell get_cell(int row, int col)
+    {
+        if (row < 0 || row > 7 || col < 0 || row > 7)
+        {
+            System.out.println("Out of index");
+            return null;
+        }
+
+        return this.board[row][col];
+    }
+
 
     // for debugging and visualizing purposes
     public String toString()
