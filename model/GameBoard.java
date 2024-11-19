@@ -25,6 +25,8 @@ public class GameBoard {
         }
     }
 
+
+    // for debugging and visualizing purposes
     public String toString()
     {
         String str_board = "";
