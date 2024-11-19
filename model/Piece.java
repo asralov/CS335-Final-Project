@@ -5,7 +5,7 @@ public class Piece {
     private boolean isKing;
     private int row;
     private int column; 
-    private GameBoard board = new GameBoard();
+    //private GameBoard board = new GameBoard();
 
     public Piece(Color color, int row, int column) {
         this.color = color;
@@ -59,13 +59,13 @@ public class Piece {
             int currentRow = this.row + rowStep;
             int currentCol = this.column + colStep;
 
-            while (currentRow != newRow && currentCol != newCol) {
-                if (board.get_cell(currentRow, currentCol).is_taken()) {
-                    return false; 
-                }
-                currentRow += rowStep;
-                currentCol += colStep;
-            }
+//            while (currentRow != newRow && currentCol != newCol) {
+//                if (board.get_cell(currentRow, currentCol).is_taken()) {
+//                    return false; 
+//                }
+//                currentRow += rowStep;
+//                currentCol += colStep;
+//            }
         } 
         else 
         {
@@ -80,8 +80,8 @@ public class Piece {
                 return false; 
             }
             
-            if (board.get_cell(newRow, newCol).is_taken())
-            	return false;
+//            if (board.get_cell(newRow, newCol).is_taken())
+//            	return false;
             else
             	return true;
         }

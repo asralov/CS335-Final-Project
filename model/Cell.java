@@ -15,6 +15,7 @@ public class Cell {
 
     public int x_cord() {return this.x;}
     
+    
     public int y_cord() {return this.y;}
 
     public boolean is_taken() {return this.piece != null;}
@@ -29,6 +30,9 @@ public class Cell {
 
     public String toString()
     {
-        return (this.color == Color.WHITE) ? "white" : "black";
+    	if (this.piece == null) {
+    		return (this.color == Color.WHITE) ? "white" : "black";
+    	}
+        return (this.color == Color.WHITE) ? "white " + piece.toString() : "black " + piece.toString();
     }
 }
