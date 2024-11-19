@@ -9,6 +9,8 @@ public class GameBoard {
     public GameBoard()
     {
         init_board(); // getting a board
+        // init_white()  // initialize the white player pieces
+        // init_black()  // initialize the black player pieces
     }
 
     private void init_board()
@@ -23,6 +25,25 @@ public class GameBoard {
                 this.board[i][j] = new Cell(cell_color, i, j);
             }
         }
+    }
+
+
+
+
+    // if the move is valid
+    // BY assuming that the move is valid
+    // we need to work on the case when it can eat
+    public void move(Cell cell, int x, int y)
+    {  
+        Piece piece = cell.get_piece();
+        // putting cordinates
+
+        //  cell  cell  cell
+        //  cell  cell  cell
+        //  cell  cell  cell
+        //  cell  cell  cell
+        cell.empty_cell();
+        this.board[x][y].move_piece(piece);
     }
 
 
