@@ -48,7 +48,7 @@ public class GameBoard {
 
     public Cell get_cell(int row, int col)
     {
-        if (row < 0 || row > 7 || col < 0 || row > 7)
+        if (row < 0 || row > 7 || col < 0 || col > 7)
         {
             System.out.println("Out of index");
             return null;
