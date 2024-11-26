@@ -4,29 +4,31 @@ package model;
 // not a FLYWEIGHT class
 
 public class GameBoard {
-    private Cell[][] board;
+    private Piece[][] board;
     // cell and pieces array (Amyra)
 
     public GameBoard()
     {
         init_board(); // getting a board
-        init_white();  // initialize the white player pieces
-        init_black();  // initialize the black player pieces
+        // init_white();  // initialize the white player pieces
+        // init_black();  // initialize the black player pieces
     }
     
     
     private void init_board()
     {
-        this.board = new Cell[8][8];
-        int row = 8, col = 8;
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < col; j++)
-            {
-                Color cell_color = ((i + j) % 2 == 0) ? Color.WHITE : Color.BLACK;
-                this.board[i][j] = new Cell(cell_color, i, j);
-            }
-        }
+        this.board = new Piece[8][8];
+        // int row = 8, col = 8;
+        // for (int i = 0; i < row; i++)
+        // {
+        //     for (int j = 0; j < col; j++)
+        //     {
+        //         Color cell_color = ((i + j) % 2 == 0) ? Color.WHITE : Color.BLACK;
+        //         this.board[i][j] = new Cell(cell_color, i, j);
+        //     }
+        // }
+        init_white();
+        init_black();
     }
 
     
@@ -34,9 +36,9 @@ public class GameBoard {
     	for (int i = 0; i < 3; i++) {
     		for (int j = 0; j < 8; j++) {
     			if (i % 2 == 0 && j % 2 == 1) {
-    				board[i][j].move_piece(new Piece(Color.WHITE, i, j));
+    				board[i][j] = new Piece(Color.WHITE, i, j);
     			} else if (i % 2 == 1 && j % 2 == 0){
-    				board[i][j].move_piece(new Piece(Color.WHITE, i, j));
+    				board[i][j] = new Piece(Color.WHITE, i, j);
     			}
     		}
     	}
@@ -46,9 +48,9 @@ public class GameBoard {
     	for (int i = 5; i < 8; i++) {
     		for (int j = 0; j < 8; j++) {
     			if (i % 2 == 0 && j % 2 == 1) {
-    				board[i][j].move_piece(new Piece(Color.BLACK, i, j));
+    				board[i][j] = new Piece(Color.BLACK, i, j);
     			} else if (i % 2 == 1 && j % 2 == 0){
-    				board[i][j].move_piece(new Piece(Color.BLACK, i, j));
+    				board[i][j] = new Piece(Color.BLACK, i, j);
     			}
     		}
     	}
@@ -58,7 +60,7 @@ public class GameBoard {
     	int whitePiece = 0 ; 
     	for (int i = 0; i < 8; i++) {
     		for (int j = 0; j < 8; j++) {
-    			if (board[i][j].get_piece().getColor().equals(Color.WHITE)) {
+    			if (board[i][j].getColor().equals(Color.WHITE)) {
     				whitePiece ++;
     			}
     		}
@@ -71,7 +73,7 @@ public class GameBoard {
     	int blackPiece = 0 ; 
     	for (int i = 0; i < 8; i++) {
     		for (int j = 0; j < 8; j++) {
-    			if (board[i][j].get_piece().getColor().equals(Color.BLACK)) {
+    			if (board[i][j].getColor().equals(Color.BLACK)) {
     				blackPiece ++;
     			}
     		}
@@ -94,26 +96,27 @@ public class GameBoard {
         //  cell  cell  cell
         //  cell  cell  cell
         cell.empty_cell();
-        this.board[x][y].move_piece(piece);
+        this.board[x][y] = piece;
     }
 
-    public Cell get_cell(int row, int col)
-    {
-        if (row < 0 || row > 7 || col < 0 || row > 7)
-        {
-            System.out.println("Out of index");
-            return null;
-        }
+    // public Cell get_cell(int row, int col)
+    // {
+    //     if (row < 0 || row > 7 || col < 0 || row > 7)
+    //     {
+    //         System.out.println("Out of index");
+    //         return null;
+    //     }
 
-        return this.board[row][col];
-    }
+    //     return this.board[row][col];
+    // }
     
     
-    public Cell[][] getBoardCopy() {
-    	Cell[][] copy = new Cell[8][8]; 
+    public Piece[][] getBoardCopy() {
+    	Piece[][] copy = new Piece[8][8]; 
     	for (int i = 0; i < 8; i ++) {
     		for (int j = 0; j < 8; j++) {
-    			copy[i][j] = new Cell(board[i][j]);
+    			// copy[i][j] = new Cell(board[i][j]);
+                copy[i][j] = new Piece(board[i][j]);
     		}
     	}
     	
