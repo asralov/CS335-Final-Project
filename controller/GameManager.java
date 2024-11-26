@@ -6,6 +6,8 @@ public class GameManager
 {
     private GameBoard board;
     private int move_count;
+    private Player p1;
+    private PlayerType p2;
 
     public GameManager()
     {
