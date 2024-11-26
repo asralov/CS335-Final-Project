@@ -1,6 +1,8 @@
-package model;
+package controller;
 
-public class Player {
+import model.Color;
+
+public class Player implements PlayerType {
 	private String name; 
 	private int score; 
 	private Color color; 
@@ -21,5 +23,14 @@ public class Player {
 	
 	public Color getColor() {
 		return this.color; 
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void make_a_move()
+	{
+
 	}
 }

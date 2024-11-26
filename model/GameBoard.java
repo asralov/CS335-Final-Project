@@ -5,6 +5,7 @@ package model;
 
 public class GameBoard {
     private Cell[][] board;
+    // cell and pieces array (Amyra)
 
     public GameBoard()
     {
