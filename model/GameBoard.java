@@ -12,7 +12,8 @@ public class GameBoard {
         init_white();  // initialize the white player pieces
         init_black();  // initialize the black player pieces
     }
-
+    
+    
     private void init_board()
     {
         this.board = new Cell[8][8];
@@ -27,7 +28,7 @@ public class GameBoard {
         }
     }
 
-
+    
     public void init_white() {
     	for (int i = 0; i < 3; i++) {
     		for (int j = 0; j < 8; j++) {
@@ -53,11 +54,29 @@ public class GameBoard {
     }
     
     public int getWhitePieces() {
-    	return 0; 
+    	int whitePiece = 0 ; 
+    	for (int i = 0; i < 8; i++) {
+    		for (int j = 0; j < 8; j++) {
+    			if (board[i][j].get_piece().getColor().equals(Color.WHITE)) {
+    				whitePiece ++;
+    			}
+    		}
+    	}
+    	
+    	return whitePiece; 
     }
     
     public int getBlackPieces() {
-    	return 0; 
+    	int blackPiece = 0 ; 
+    	for (int i = 0; i < 8; i++) {
+    		for (int j = 0; j < 8; j++) {
+    			if (board[i][j].get_piece().getColor().equals(Color.BLACK)) {
+    				blackPiece ++;
+    			}
+    		}
+    	}
+    	
+    	return blackPiece; 
     }
 
 
@@ -87,8 +106,19 @@ public class GameBoard {
 
         return this.board[row][col];
     }
-
-
+    
+    
+    public Cell[][] getBoardCopy() {
+    	Cell[][] copy = new Cell[8][8]; 
+    	for (int i = 0; i < 8; i ++) {
+    		for (int j = 0; j < 8; j++) {
+    			copy[i][j] = new Cell(board[i][j]);
+    		}
+    	}
+    	
+    	return copy; 
+    }
+    
     // for debugging and visualizing purposes
     public String toString()
     {
