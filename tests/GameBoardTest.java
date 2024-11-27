@@ -1,9 +1,17 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
+<<<<<<< HEAD
 import org.junit.jupiter.api.Test;
 
 import model.*;
+=======
+
+import org.junit.jupiter.api.Test;
+
+import model.GameBoard;
+
+>>>>>>> origin/main
 // Pulat's task
 public class GameBoardTest {
     

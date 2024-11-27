@@ -12,8 +12,15 @@ public class Cell {
         this.x = x;
         this.y = y;
     }
+    
+    public Cell(Cell copy) {
+    	this.x = copy.x;
+    	this.y = copy.y;
+    	this.piece = new Piece(piece);
+    }
 
     public int x_cord() {return this.x;}
+    
     
     public int y_cord() {return this.y;}
 
@@ -29,6 +36,9 @@ public class Cell {
 
     public String toString()
     {
-        return (this.color == Color.WHITE) ? "white" : "black";
+    	if (this.piece == null) {
+    		return (this.color == Color.WHITE) ? "white" : "black";
+    	}
+        return (this.color == Color.WHITE) ? "white " + piece.toString() : "black " + piece.toString();
     }
 }
