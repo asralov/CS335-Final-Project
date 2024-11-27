@@ -15,15 +15,13 @@ public class Piece {
         
     }
     
-    public Piece(Piece p)
-    {
-    	
-    	p.color = this.color;
-    	p.x = this.x;
-    	p.y = this.y;
-    	p.isKing = this.isKing;
-    	
+    public Piece(Piece p) {
+        this.color = p.color;  // Correct: copying from p to this (the new piece)
+        this.x = p.x;
+        this.y = p.y;
+        this.isKing = p.isKing;
     }
+
 
     public Color getColor() {
         return color;
@@ -44,6 +42,8 @@ public class Piece {
     public void ToKing() {
         this.isKing = true;
     }
+    
+    
     
     @Override
     public String toString() {
