@@ -110,6 +110,10 @@ public class GameBoard {
     //     return this.board[row][col];
     // }
     
+    public Piece getPiece(int x, int y) {
+    	return board[x][y];
+    }
+    
     
     public Piece[][] getBoardCopy() {
     	Piece[][] copy = new Piece[8][8]; 
