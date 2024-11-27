@@ -15,4 +15,8 @@ public class GameManager
         this.move_count = 0;
     }
     
+    public void NextMove() {
+    	move_count++;
+    }
+    
 }
