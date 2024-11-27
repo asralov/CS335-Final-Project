@@ -1,5 +1,7 @@
 package controller;
 
+import java.util.ArrayList;
+
 import model.*;
 
 public class GameManager 
@@ -26,6 +28,14 @@ public class GameManager
     	// click on piece
     	if (clickedPiece != null) {
     		this.gameState = GameStateEnum.Selected;
+    		ArrayList<ArrayList<int[]>> possiblePaths = move.getPossibleMoves(clickedPiece, board.getBoardCopy());
+    		for (ArrayList<int[]> path : possiblePaths) {
+    			// i is initialized at 1 so that it doesn't highlight the clicked
+    			// piece
+    			for (int i = 1; i < path.size(); i++) {
+    				HighLightCell(path.get(i)[0], path.get(i)[1]);
+    			}
+    		}
     		// get the possible moves, iterate through them
     		// and highlight each one
     	}
@@ -34,6 +44,10 @@ public class GameManager
     		// check if the coordinate is in the arraylist of possible moves
     		//if yes then perform move, otherwise go back to unselected and reset
     	}
+    }
+    
+    public void HighLightCell(int x, int y) {
+    	
     }
     
     public void NextMove() {
