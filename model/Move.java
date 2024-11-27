@@ -18,32 +18,24 @@ public class Move {
 		for (int[] direction : directions) {
 			getPositionsList(x, y, direction, board, color, list1, list_capture);
 		}
-		if (list_capture.isEmpty() == true)
+		if (list_capture.isEmpty() == true) {
+			
 			return list1;
-		else
-			return getLongestList(list_capture);
-		
-	}
-
-	private static ArrayList<ArrayList<int[]>> getLongestList(ArrayList<ArrayList<int[]>> list_capture) {
-		int len = 0;
-		int index = 0;
-		int i = 0;
-		ArrayList<ArrayList<int[]>> list1 = new ArrayList<>();
-		for (ArrayList<int[]> list : list_capture)
-		{
-			if (list.size() > len)
-			{
-				len = list.size();
-				index = i;
-			}
-			i++;
 		}
+		else
+			return list_capture;
 		
-		list1.add(list_capture.get(index));
-		return list1;
 	}
 
+	/*
+	 * private static ArrayList<ArrayList<int[]>>
+	 * getLongestList(ArrayList<ArrayList<int[]>> list_capture) { int len = 0; int
+	 * index = 0; int i = 0; ArrayList<ArrayList<int[]>> list1 = new ArrayList<>();
+	 * for (ArrayList<int[]> list : list_capture) { if (list.size() > len) { len =
+	 * list.size(); index = i; } i++; }
+	 * 
+	 * list1.add(list_capture.get(index)); return list1; }
+	 */
 	private static int[][] getMoveDirections(boolean isKing, Color color) {
 		if (isKing) {
 			return new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
