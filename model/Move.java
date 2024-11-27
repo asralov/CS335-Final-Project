@@ -21,8 +21,27 @@ public class Move {
 		if (list_capture.isEmpty() == true)
 			return list1;
 		else
-			return list_capture;
+			return getLongestList(list_capture);
 		
+	}
+
+	private static ArrayList<ArrayList<int[]>> getLongestList(ArrayList<ArrayList<int[]>> list_capture) {
+		int len = 0;
+		int index = 0;
+		int i = 0;
+		ArrayList<ArrayList<int[]>> list1 = new ArrayList<>();
+		for (ArrayList<int[]> list : list_capture)
+		{
+			if (list.size() > len)
+			{
+				len = list.size();
+				index = i;
+			}
+			i++;
+		}
+		
+		list1.add(list_capture.get(index));
+		return list1;
 	}
 
 	private static int[][] getMoveDirections(boolean isKing, Color color) {
@@ -66,6 +85,34 @@ public class Move {
 
 	private static void catchPiece(int x, int y, Piece[][] board, Color color, int[] direction,
 			ArrayList<int[]> currentPath, ArrayList<ArrayList<int[]>> list_capture) {
+		int x1 = x + direction[0];
+		int y1 = y + direction[1];
+		int x2 = x1 + direction[0];
+		int y2 = y1 + direction[1];
+
+		
+		if (validIndex(x1, y1) && board[x1][y1] != null &&
+				board[x1][y1].getColor() != color &&
+				validIndex(x2, y2) && board[x2][y2] == null) {
+
+			ArrayList<int[]> newPath = new ArrayList<>(currentPath);
+			newPath.add(new int[]{x1, y1}); 
+			newPath.add(new int[]{x2, y2}); 
+
+			Piece temp = board[x1][y1];
+			board[x1][y1] = null;
+
+			for (int[] nextDirection : getMoveDirections(true, color)) {
+				catchPiece(x2, y2, board, color, nextDirection, newPath, list_capture);
+			}
+
+		
+			board[x1][y1] = temp;
+
+			if (newPath.size() > currentPath.size()) {
+				list_capture.add(newPath);
+			}
+		}
 	}
 
 
@@ -116,14 +163,14 @@ public class Move {
 
 	public static void main(String[] args) {
 		Piece[][] board = new Piece[8][8];
-		board[2][3] = new Piece(Color.WHITE, 2, 3);
+		board[0][0] = new Piece(Color.WHITE, 0, 0);
 		board[3][4] = new Piece(Color.BLACK, 3, 4);
 		board[5][6] = new Piece(Color.BLACK, 5, 6);
 		board[4][5] = null;  
 		board[6][7] = null;  
 
 		
-		Piece piece = board[2][3];
+		Piece piece = board[0][0];
 		
 		printBoard(board);
 		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
