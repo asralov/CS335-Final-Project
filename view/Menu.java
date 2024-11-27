@@ -2,65 +2,120 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Menu implements State {
     @Override
     public void setup(JFrame window) {
+        // Create the base panel with BorderLayout
+        JPanel basePanel = new JPanel(new BorderLayout());
+        basePanel.setBackground(new Color(77, 135, 50));
         
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        // green rgb we are gonna use: 77, 135, 50
-        panel.setBackground(new Color(77,135,50));
-        
-
+        // Create a panel for the title and buttons
+        JPanel gridPanel = new JPanel(new GridBagLayout());
+        gridPanel.setOpaque(false); // Transparent to show basePanel background
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-
-        JLabel title = new JLabel();
-        System.out.println(new File("../assets/logo.png").exists());
-
-        ImageIcon ic = new ImageIcon("../assets/logo.png");
-        Image img = ic.getImage();
-        Image scaled_image = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-        ImageIcon scaled_ic = new ImageIcon(scaled_image);
-        title.setIcon(scaled_ic);
         
-        // title.setFont(new Font("Arial", Font.BOLD, 48));
-        // title.setForeground(Color.WHITE);
+        // Title
+        JLabel title = new JLabel();
+        ImageIcon ic = new ImageIcon("./assets/logo.png");
+        Image img = ic.getImage();
+        int w = 400;
+        int h = w * (16/9); 
+        Image scaledImage = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        ImageIcon scaledIc = new ImageIcon(scaledImage);
+        title.setIcon(scaledIc);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panel.add(title, gbc);
-
-        // new game button
-        JButton play_button = new JButton("NEW GAME");
-        play_button.setFont(new Font("Arial", Font.PLAIN, 24));
+        gridPanel.add(title, gbc);
+        
+        // Buttons
+        JButton playButton = new JButton("NEW GAME");
+        playButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 1;
-        panel.add(play_button, gbc);
-
-        // continue button
-        JButton cont_button = new JButton("CONTINUE");
-        cont_button.setFont(new Font("Arial", Font.PLAIN, 24));
+        gridPanel.add(playButton, gbc);
+        
+        JButton contButton = new JButton("CONTINUE");
+        contButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 2;
-        panel.add(cont_button, gbc);
-
-        // exit button
-        JButton exit_button = new JButton("EXIT");
-        exit_button.setFont(new Font("Arial", Font.PLAIN, 24));
+        gridPanel.add(contButton, gbc);
+        
+        JButton exitButton = new JButton("EXIT");
+        exitButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 3;
-        panel.add(exit_button, gbc);
-
-        // event listeners
-        play_button.addActionListener(e -> System.out.println("new game button clicked!"));
-        cont_button.addActionListener(e -> System.out.println("continue button clicked!"));
-        exit_button.addActionListener(e -> System.exit(0));
-
-        // clearning the existing components
+        gridPanel.add(exitButton, gbc);
+        
+        // Styling buttons
+        styleButton(playButton);
+        styleButton(contButton);
+        styleButton(exitButton);
+        
+        // Add the grid panel to the center of the base panel
+        basePanel.add(gridPanel, BorderLayout.CENTER);
+        
+        // Create a top panel for the mode button
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setOpaque(false); // Transparent to show basePanel background
+        JButton modeButton = new JButton("PvsP");
+        styleButton(modeButton);
+        modeButton.setPreferredSize(new Dimension(100, 40)); // Adjust size of the button
+        topPanel.add(modeButton, BorderLayout.EAST); // Align the button to the right
+        
+        // Add the top panel to the base panel
+        basePanel.add(topPanel, BorderLayout.NORTH);
+        
+        // Mode button action listener
+        modeButton.addActionListener(e -> {
+            String currentText = modeButton.getText();
+            modeButton.setText(currentText.equals("PvsP") ? "PvsC" : "PvsP");
+        });
+        
+        // Event listeners
+        playButton.addActionListener(e -> System.out.println("New game button clicked!"));
+        contButton.addActionListener(e -> System.out.println("Continue button clicked!"));
+        exitButton.addActionListener(e -> System.exit(0));
+        
+        // Set up the window
         window.getContentPane().removeAll();
-        window.add(panel);
+        window.add(basePanel);
         window.revalidate();
         window.repaint();
+    }
+
+    public static void styleButton(JButton button) {
+        Dimension size = new Dimension(400, 50);
+        button.setPreferredSize(size);
+        button.setMaximumSize(size);
+        button.setMinimumSize(size);
+        Color defaultColor = new Color(0, 0, 0);
+        button.setOpaque(true);
+        button.setBackground(defaultColor);
+        button.setForeground(Color.WHITE);
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setContentAreaFilled(true);
+        button.setFocusPainted(false);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(55, 55, 55));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(defaultColor);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(new Color(80, 80, 80));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(new Color(55, 55, 55));
+            }
+        });
     }
 }
