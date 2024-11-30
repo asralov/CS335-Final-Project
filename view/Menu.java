@@ -8,17 +8,17 @@ import java.awt.event.MouseEvent;
 public class Menu implements State {
     @Override
     public void setup(JFrame window) {
-        // Create the base panel with BorderLayout
+        // creating the base panel with BorderLayout
         JPanel basePanel = new JPanel(new BorderLayout());
         basePanel.setBackground(new Color(77, 135, 50));
         
-        // Create a panel for the title and buttons
+        // creating a panel for the title and buttons
         JPanel gridPanel = new JPanel(new GridBagLayout());
-        gridPanel.setOpaque(false); // Transparent to show basePanel background
+        gridPanel.setOpaque(false); 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-        
-        // Title
+
+        // title
         JLabel title = new JLabel();
         ImageIcon ic = new ImageIcon("./assets/logo.png");
         Image img = ic.getImage();
@@ -31,7 +31,7 @@ public class Menu implements State {
         gbc.gridy = 0;
         gridPanel.add(title, gbc);
         
-        // Buttons
+        // buttons
         JButton playButton = new JButton("NEW GAME");
         playButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 1;
@@ -47,15 +47,15 @@ public class Menu implements State {
         gbc.gridy = 3;
         gridPanel.add(exitButton, gbc);
         
-        // Styling buttons
+        // styling buttons
         styleButton(playButton);
         styleButton(contButton);
         styleButton(exitButton);
         
-        // Add the grid panel to the center of the base panel
+        // adding the grid panel to the center of the base panel
         basePanel.add(gridPanel, BorderLayout.CENTER);
         
-        // Create a top panel for the mode button
+        // creating a top panel for the mode button
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false); // Transparent to show basePanel background
         JButton modeButton = new JButton();
@@ -80,11 +80,11 @@ public class Menu implements State {
         Image pc_img = pc_ic.getImage().getScaledInstance(w_icon, h_icon, Image.SCALE_SMOOTH);
         ImageIcon p_vs_c = new ImageIcon(pc_img);
         
-        // Set the initial icon for the mode button
+        // setting the initial icon for the mode button
         modeButton.setIcon(p_vs_p);        
-        // Mode button action listener to toggle images
+        // mode button action listener to toggle images
         modeButton.addActionListener(e -> {
-            // Check current icon and toggle
+            // checking current icon and toggle
             if (modeButton.getIcon() == p_vs_p) {
                 modeButton.setIcon(p_vs_c);
             } else {
@@ -92,12 +92,11 @@ public class Menu implements State {
             }
         });
         
-        // Event listeners
         playButton.addActionListener(e -> System.out.println("New game button clicked!"));
         contButton.addActionListener(e -> System.out.println("Continue button clicked!"));
         exitButton.addActionListener(e -> System.exit(0));
         
-        // Set up the window
+        // setting up the window
         window.getContentPane().removeAll();
         window.add(basePanel);
         window.revalidate();
