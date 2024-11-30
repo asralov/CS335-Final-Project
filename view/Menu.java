@@ -58,18 +58,38 @@ public class Menu implements State {
         // Create a top panel for the mode button
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false); // Transparent to show basePanel background
-        JButton modeButton = new JButton("PvsP");
+        JButton modeButton = new JButton();
         styleButton(modeButton);
-        modeButton.setPreferredSize(new Dimension(100, 40)); // Adjust size of the button
-        topPanel.add(modeButton, BorderLayout.EAST); // Align the button to the right
+        Dimension mode_button_size = new Dimension(50, 50);
+        modeButton.setPreferredSize(mode_button_size);
+        modeButton.setMaximumSize(mode_button_size);
+        modeButton.setMinimumSize(mode_button_size);
+        topPanel.add(modeButton, BorderLayout.EAST); 
         
-        // Add the top panel to the base panel
         basePanel.add(topPanel, BorderLayout.NORTH);
+
+
+        // scaling the pictures
+        int w_icon = 50;
+        int h_icon = w_icon * (16/9);
+        ImageIcon pp_ic = new ImageIcon("./assets/p_vs_p.png");
+        Image pp_img = pp_ic.getImage().getScaledInstance(w_icon, h_icon, Image.SCALE_SMOOTH);
+        ImageIcon p_vs_p = new ImageIcon(pp_img);
+
+        ImageIcon pc_ic = new ImageIcon("./assets/p_vs_c.png");
+        Image pc_img = pc_ic.getImage().getScaledInstance(w_icon, h_icon, Image.SCALE_SMOOTH);
+        ImageIcon p_vs_c = new ImageIcon(pc_img);
         
-        // Mode button action listener
+        // Set the initial icon for the mode button
+        modeButton.setIcon(p_vs_p);        
+        // Mode button action listener to toggle images
         modeButton.addActionListener(e -> {
-            String currentText = modeButton.getText();
-            modeButton.setText(currentText.equals("PvsP") ? "PvsC" : "PvsP");
+            // Check current icon and toggle
+            if (modeButton.getIcon() == p_vs_p) {
+                modeButton.setIcon(p_vs_c);
+            } else {
+                modeButton.setIcon(p_vs_p);
+            }
         });
         
         // Event listeners
