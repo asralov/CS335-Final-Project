@@ -155,14 +155,15 @@ public class Move {
 
 	public static void main(String[] args) {
 		Piece[][] board = new Piece[8][8];
-		board[0][0] = new Piece(Color.WHITE, 0, 0);
+		board[2][3] = new Piece(Color.WHITE, 2, 3);
 		board[3][4] = new Piece(Color.BLACK, 3, 4);
 		board[5][6] = new Piece(Color.BLACK, 5, 6);
+		board[3][2] = new Piece(Color.BLACK, 3, 2);
 		board[4][5] = null;  
 		board[6][7] = null;  
 
 		
-		Piece piece = board[0][0];
+		Piece piece = board[2][3];
 		
 		printBoard(board);
 		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
