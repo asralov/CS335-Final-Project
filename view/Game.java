@@ -17,12 +17,6 @@ public class Game implements State{
     public void setup(JFrame window)
     {
         JPanel main_game_panel = new JPanel(new BorderLayout());
-        
-
-
-
-
-
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         wrapperPanel.setBackground(new Color(77, 135, 50));
         // for TESTING PURPOSES TO CHECK IF WE ARE ABLE TO COME BACK
@@ -37,7 +31,7 @@ public class Game implements State{
         game_panel.setPreferredSize(new Dimension(700, 700));
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                Color color = (row + col) % 2 == 0 ? Color.WHITE : Color.BLACK;
+                Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
                 game_panel.add(new Cell(color));
             }
         }

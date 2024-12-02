@@ -57,7 +57,7 @@ public class Menu implements State {
         
         // creating a top panel for the mode button
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setOpaque(false); // Transparent to show basePanel background
+        topPanel.setOpaque(false);
         JButton modeButton = new JButton();
         styleButton(modeButton);
         
