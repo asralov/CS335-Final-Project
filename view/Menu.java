@@ -60,7 +60,8 @@ public class Menu implements State {
         topPanel.setOpaque(false); // Transparent to show basePanel background
         JButton modeButton = new JButton();
         styleButton(modeButton);
-        Dimension mode_button_size = new Dimension(50, 50);
+        
+        Dimension mode_button_size = new Dimension(100, 75);
         modeButton.setPreferredSize(mode_button_size);
         modeButton.setMaximumSize(mode_button_size);
         modeButton.setMinimumSize(mode_button_size);
@@ -68,10 +69,9 @@ public class Menu implements State {
         
         basePanel.add(topPanel, BorderLayout.NORTH);
 
-
         // scaling the pictures
-        int w_icon = 50;
-        int h_icon = w_icon * (16/9);
+        int w_icon = 70;
+        int h_icon = 50;
         ImageIcon pp_ic = new ImageIcon("./assets/p_vs_p.png");
         Image pp_img = pp_ic.getImage().getScaledInstance(w_icon, h_icon, Image.SCALE_SMOOTH);
         ImageIcon p_vs_p = new ImageIcon(pp_img);
@@ -81,7 +81,10 @@ public class Menu implements State {
         ImageIcon p_vs_c = new ImageIcon(pc_img);
         
         // setting the initial icon for the mode button
-        modeButton.setIcon(p_vs_p);        
+        modeButton.setIcon(p_vs_p);     
+       
+ 
+          
         // mode button action listener to toggle images
         modeButton.addActionListener(e -> {
             // checking current icon and toggle
