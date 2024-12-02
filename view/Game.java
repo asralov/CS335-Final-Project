@@ -12,19 +12,23 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import model.GameBoard;
+
 public class Game implements State{
     @Override
     public void setup(JFrame window)
     {
+        // FOR VISUALIZING PURPOSES
+        GameBoard gb = new GameBoard();
         JPanel main_game_panel = new JPanel(new BorderLayout());
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         wrapperPanel.setBackground(new Color(77, 135, 50));
         // for TESTING PURPOSES TO CHECK IF WE ARE ABLE TO COME BACK
-        JButton menu_button = new JButton("MENU");
-        menu_button.setFont(new Font("Arial", Font.BOLD, 20));
-        wrapperPanel.add(menu_button);
+        // JButton menu_button = new JButton("MENU");
+        // menu_button.setFont(new Font("Arial", Font.BOLD, 20));
+        // wrapperPanel.add(menu_button);
 
-        menu_button.addActionListener(e -> switch_to_menu());
+        // menu_button.addActionListener(e -> switch_to_menu());
         wrapperPanel.setPreferredSize(new Dimension(800, 800)); 
 
         JPanel game_panel = new JPanel(new GridLayout(8, 8));
@@ -32,7 +36,7 @@ public class Game implements State{
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
-                game_panel.add(new Cell(color));
+                game_panel.add(new Cell(color, gb.getPiece(row, col)));
             }
         }
         wrapperPanel.add(game_panel);
