@@ -4,9 +4,11 @@ package view;
 import javax.swing.*;
 
 public class Checkers {
+    public static State game_state;
+    public static JFrame window;
     public static void main(String[] args) {
         
-        JFrame window = new JFrame("Checkers");
+        window = new JFrame("Checkers");
 
         // default position to be a center of the window
         window.setLocationRelativeTo(null);
@@ -16,7 +18,7 @@ public class Checkers {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // creating a state instance to keep track of what state we are in
         // and by default we start with menu
-        State game_state = new Menu();
+        game_state = new Menu();
         game_state.setup(window);
         
         // displaying the window
