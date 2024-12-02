@@ -16,10 +16,31 @@ class GameManagerTest {
 	
 	@Test
 	public void testOnPieceClick_ValidPiece() {
-	    GameManager manager = new GameManager();
-	    manager.OnPieceClick(0, 1); // Assuming this is a valid piece
-	    assertEquals(GameStateEnum.Selected, manager.getState());
+	    gameManager.OnPieceClick(0, 3); // Assuming this is a valid piece
 	    System.out.println(gameManager);
+	    assertEquals(GameStateEnum.Selected, gameManager.getState());
+	}
+	
+	@Test
+	public void testOnPieceClick_MovePiece() {
+	    gameManager.OnPieceClick(2, 1);
+	    System.out.println(gameManager);
+	    assertEquals(GameStateEnum.Selected, gameManager.getState());
+	    gameManager.OnPieceClick(3, 2);
+	    System.out.println(gameManager);
+	    assertEquals(GameStateEnum.Unselected, gameManager.getState());
+	}
+	
+	@Test
+	public void testMovingTwoPlayers() {
+		gameManager.OnPieceClick(2, 1);
+		System.out.println(gameManager);
+		gameManager.OnPieceClick(3, 2);
+		System.out.println(gameManager);
+		gameManager.OnPieceClick(3, 2);
+		System.out.println(gameManager);
+		gameManager.OnPieceClick(2, 1);
+		System.out.println(gameManager);
 	}
 
 
