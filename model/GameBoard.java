@@ -110,32 +110,65 @@ public class GameBoard {
     //     return this.board[row][col];
     // }
     
+    public Piece getPiece(int x, int y) {
+    	return board[x][y];
+    }
+    
+    public Piece[][] getBoard() {
+    	return board;
+    }
     
     public Piece[][] getBoardCopy() {
     	Piece[][] copy = new Piece[8][8]; 
     	for (int i = 0; i < 8; i ++) {
     		for (int j = 0; j < 8; j++) {
+    			if (board[i][j] != null) {
+    				copy[i][j] = new Piece(board[i][j]);
+    			}
     			// copy[i][j] = new Cell(board[i][j]);
-                copy[i][j] = new Piece(board[i][j]);
+                
     		}
     	}
     	
     	return copy; 
     }
     
-    // for debugging and visualizing purposes
-    public String toString()
-    {
-        String str_board = "";
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {   
-                str_board += this.board[i][j].toString() + " ";
-            }
-            str_board += "\n";
-        }
-        return str_board;
+//    // for debugging and visualizing purposes
+//    public String toString()
+//    {
+//        String str_board = "";
+//        for (int i = 0; i < 8; i++)
+//        {
+//            for (int j = 0; j < 8; j++)
+//            {   
+//                str_board += this.board[i][j].toString() + " ";
+//            }
+//            str_board += "\n";
+//        }
+//        return str_board;
+//    }
+    
+    
+    public String toString() {
+    	String output = "   0 1 2 3 4 5 6 7\n   ----------------\n";
+
+	    for (int i = 0; i < board.length; i++) {
+	        output += i + "| "; 
+	        for (int j = 0; j < board[i].length; j++) {
+	            if (board[i][j] == null) {
+	            	output += ". "; 
+	            } else if (board[i][j].getColor() == Color.WHITE) {
+	            	output += board[i][j].isKing() ? "W " : "w "; 
+	            } else if (board[i][j].getColor() == Color.BLACK) {
+	            	output += board[i][j].isKing() ? "B " : "b ";
+	            }
+	        }
+	        output += "\n";
+	    }
+	    output += "\n";
+	    
+	    return output;
+    	
     }
     
 }
