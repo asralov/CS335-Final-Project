@@ -92,7 +92,7 @@ public class Menu implements State {
             }
         });
         
-        playButton.addActionListener(e -> System.out.println("New game button clicked!"));
+        playButton.addActionListener(e -> switch_to_game());
         contButton.addActionListener(e -> System.out.println("Continue button clicked!"));
         exitButton.addActionListener(e -> System.exit(0));
         
@@ -102,6 +102,14 @@ public class Menu implements State {
         window.revalidate();
         window.repaint();
     }
+
+    private void switch_to_game()
+    {
+        Checkers.game_state = new Game();
+        Checkers.game_state.setup(Checkers.window);
+    }
+
+    
 
     public static void styleButton(JButton button) {
         Dimension size = new Dimension(400, 50);
