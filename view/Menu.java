@@ -148,4 +148,10 @@ public class Menu implements State {
             }
         });
     }
+
+	@Override
+	public void handleCellClick(int row, int col) {
+		// TODO Auto-generated method stub
+		
+	}
 }
