@@ -43,6 +43,11 @@ public class Piece {
         this.isKing = true;
     }
     
+    public void setPosition(int x, int y) {
+    	this.x = x; 
+    	this.y = y; 
+    }
+    
     
     
     @Override

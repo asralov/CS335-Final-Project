@@ -101,17 +101,28 @@ public class GameBoard {
     // if the move is valid
     // BY assuming that the move is valid
     // we need to work on the case when it can eat
-    public void move(Cell cell, int x, int y)
-    {  
-        Piece piece = cell.get_piece();
-        // putting cordinates
+    public void move(Piece piece, int newX, int newY) {
+        if (piece == null || !isValidPosition(newX, newY)) {
+            throw new IllegalArgumentException("Invalid move.");
+        }
 
-        //  cell  cell  cell
-        //  cell  cell  cell
-        //  cell  cell  cell
-        //  cell  cell  cell
-        cell.empty_cell();
-        this.board[x][y] = piece;
+ 
+        board[piece.getRow()][piece.getColumn()] = null;
+
+        piece.setPosition(newX, newY);
+
+        board[newX][newY] = piece;
+    }
+
+    public void removePiece(int row, int col) {
+        if (isValidPosition(row, col)) {
+            board[row][col] = null;
+        }
+    }
+
+
+    private boolean isValidPosition(int x, int y) {
+        return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
     
     public void move(ArrayList<int[]> path, Color pieceColor) {
