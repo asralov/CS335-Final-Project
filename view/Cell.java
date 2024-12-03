@@ -86,6 +86,7 @@ public class Cell extends JButton{
 
 
     public void highlightCell(boolean highlight) {
+        System.out.println("HIGHLIGHTING CELL: " + this.x + " " + this.y);
         if (highlight) {
             this.setBackground(Color.RED); 
         } else {

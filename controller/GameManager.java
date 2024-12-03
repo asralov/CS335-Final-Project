@@ -5,8 +5,12 @@ import java.util.HashSet;
 
 import javax.swing.JPanel;
 
-import model.*;
+import model.Piece;
+import model.GameBoard;
+import model.Move;
 import view.Cell;
+//import model.Color;
+import java.awt.Color;
 
 public class GameManager 
 {
@@ -34,12 +38,14 @@ public class GameManager
     }
     
     public void OnPieceClick(int x, int y) {
-    	ResetHighlights();
+		ResetHighlights();
+    	
     	// perform reset
     	Piece clickedPiece = board.getPiece(x, y);
     	
     	// click on piece
     	if (clickedPiece != null) {
+			System.out.println("HERE");
 			if (!IsPieceMoveable(clickedPiece, GetMovablePieces())) return;
     		this.gameState = GameStateEnum.Selected;
     		this.selectedPiece = clickedPiece;
@@ -48,21 +54,20 @@ public class GameManager
     		for (ArrayList<int[]> path : possiblePaths) {
     			// i is initialized at 1 so that it doesn't highlight the clicked
     			// piece
-    			
-
 				for (int i = 1; i < path.size(); i++) {
 					int[] move = path.get(i);
 					Cell cell = (Cell) gamePanel.getComponent(move[0] * 8 + move[1]);
 					cell.highlightCell(true);
 					highlightedCells.add(cell);
 				}
-				System.out.println(highlightedCells);
+				//System.out.println(highlightedCells);
 				
     		}
     	}
     	// click on cell
     	else {
     		// if clicked on cell while unselected the do nothing
+			System.out.println(this.gameState);
     		if (gameState.equals(GameStateEnum.Unselected)) return;
     		ArrayList<ArrayList<int[]>> possiblePaths = move.getPossibleMoves(selectedPiece, board.getBoardCopy());
             HashSet<int[]> possibleMoves = new HashSet<>();
@@ -82,7 +87,7 @@ public class GameManager
             }
 
             if (isValidMove) {
-            	System.out.println("Valid");
+            	//System.out.println("Valid");
             	for (ArrayList<int[]> path : possiblePaths) {
             		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
             			System.out.println("FOUND PATH, MOVING...");
@@ -98,7 +103,7 @@ public class GameManager
                 this.gameState = GameStateEnum.Unselected;
                 NextMove();
             } else {
-            	System.out.println("Invalid");
+            	//System.out.println("Invalid");
                 // Revert state
                 this.selectedPiece = null;
                 this.gameState = GameStateEnum.Unselected;
@@ -108,8 +113,19 @@ public class GameManager
     	}
     }
     
-    public void HighLightCell(int x, int y) {
-    	
+    public void HighLightCell() {
+    	System.out.println("UPDATING BOARD...");
+        gamePanel.removeAll();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
+                Piece piece = board.getPiece(row, col);
+                Cell cell = new Cell(color, piece, row, col);
+                gamePanel.add(cell);
+            }
+        }
+        gamePanel.revalidate();
+        gamePanel.repaint();
     }
 
 	private boolean IsPieceMoveable(Piece piece, ArrayList<Piece> moveablePieces) {
@@ -120,13 +136,17 @@ public class GameManager
 	}
     
     public void NextMove() {
+		ResetHighlights();
     	move_count++;
     	// NEED TO UPDATE: if a piece can take, then only highlight that piece
     	ArrayList<Piece> pieces = GetMovablePieces();
     	System.out.print("Possible pieces: " + pieces);
-    	for (int i = 0; i < pieces.size(); i++) {
-    		HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
-    	}
+		HighLightCell();
+    	// for (int i = 0; i < pieces.size(); i++) {
+    	// 	//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
+		// 	HighLightCell();
+    	// }
+		
     	
     }
     
@@ -190,9 +210,9 @@ public class GameManager
 	            		output += "S ";
 	            	}
 	            }
-	            	else if (newBoard[i][j].getColor() == Color.WHITE) {
+	            	else if (newBoard[i][j].getColor() == model.Color.WHITE) {
 	            	output += newBoard[i][j].isKing() ? "W " : "w "; 
-	            } else if (newBoard[i][j].getColor() == Color.BLACK) {
+	            } else if (newBoard[i][j].getColor() == model.Color.BLACK) {
 	            	output += newBoard[i][j].isKing() ? "B " : "b ";
 	            }
 	        }

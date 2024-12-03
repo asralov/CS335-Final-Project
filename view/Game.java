@@ -119,7 +119,7 @@ public class Game implements State {
         //     // Deselect if invalid move
         //     selectedPiece = null;
             // clearHighlights();
-            updateBoard();
+            //updateBoard();
         }
 
     private void highlightPossibleMoves() {
@@ -142,6 +142,7 @@ public class Game implements State {
     }
 
     private void updateBoard() {
+        System.out.println("UPDATING BOARD...");
         gamePanel.removeAll();
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
