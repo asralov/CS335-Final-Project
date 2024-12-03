@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Move {
 
-	public ArrayList<ArrayList<int[]>> getPossibleMoves(Piece piece, Piece[][] board) {
+	public static ArrayList<ArrayList<int[]>> getPossibleMoves(Piece piece, Piece[][] board) {
 		ArrayList<ArrayList<int[]>> list1 = new ArrayList<>();
 		ArrayList<ArrayList<int[]>> list_capture = new ArrayList<>();
 
