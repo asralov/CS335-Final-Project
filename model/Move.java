@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Move {
 
-	public static ArrayList<ArrayList<int[]>> getPossibleMoves(Piece piece, Piece[][] board) {
+	public ArrayList<ArrayList<int[]>> getPossibleMoves(Piece piece, Piece[][] board) {
 		ArrayList<ArrayList<int[]>> list1 = new ArrayList<>();
 		ArrayList<ArrayList<int[]>> list_capture = new ArrayList<>();
 
@@ -153,30 +153,30 @@ public class Move {
 
 
 
-	public static void main(String[] args) {
-		Piece[][] board = new Piece[8][8];
-		board[2][3] = new Piece(Color.WHITE, 2, 3);
-		board[3][4] = new Piece(Color.BLACK, 3, 4);
-		board[5][6] = new Piece(Color.BLACK, 5, 6);
-		board[3][2] = new Piece(Color.BLACK, 3, 2);
-		board[4][5] = null;  
-		board[6][7] = null;  
-
-		
-		Piece piece = board[2][3];
-		
-		printBoard(board);
-		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
-
-		System.out.println("Possible moves for the piece:");
-		for (ArrayList<int[]> move : moves) {
-			System.out.print("Move path: ");
-			for (int[] step : move) {
-				System.out.print("(" + step[0] + ", " + step[1] + ") ");
-			}
-			System.out.println();
-		}
-	}
+//	public static void main(String[] args) {
+//		Piece[][] board = new Piece[8][8];
+//		board[2][3] = new Piece(Color.WHITE, 2, 3);
+//		board[3][4] = new Piece(Color.BLACK, 3, 4);
+//		board[5][6] = new Piece(Color.BLACK, 5, 6);
+//		board[3][2] = new Piece(Color.BLACK, 3, 2);
+//		board[4][5] = null;  
+//		board[6][7] = null;  
+//
+//		
+//		Piece piece = board[2][3];
+//		
+//		printBoard(board);
+//		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
+//
+//		System.out.println("Possible moves for the piece:");
+//		for (ArrayList<int[]> move : moves) {
+//			System.out.print("Move path: ");
+//			for (int[] step : move) {
+//				System.out.print("(" + step[0] + ", " + step[1] + ") ");
+//			}
+//			System.out.println();
+//		}
+//	}
 
 
 }
