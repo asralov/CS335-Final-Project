@@ -1,10 +1,9 @@
-// hello
 package view;
 
 import javax.swing.*;
 
 public class Checkers {
-    public static State game_state;
+	public static State game_state;
     public static JFrame window;
     public static void main(String[] args) {
         
@@ -23,5 +22,17 @@ public class Checkers {
         
         // displaying the window
         window.setVisible(true);
+    }
+
+
+    public static void handleCellClick(int row, int col) {
+        if (game_state != null) {
+            game_state.handleCellClick(row, col);
+        }
+    }
+    
+    public static void switchState(State newState) {
+        game_state = newState;
+        game_state.setup(window);
     }
 }

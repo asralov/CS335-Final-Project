@@ -1,58 +1,159 @@
 package view;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import javax.swing.*;
+import model.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+public class Game implements State {
+    private GameBoard gameBoard; // Backend game board
+    private JPanel gamePanel; // UI panel for the board
+    private Piece selectedPiece; // Currently selected piece
+    private Timer timer; // Swing Timer
+    private JLabel timerLabel; // Label to display the timer
+    private int elapsedTime = 0; // Time in seconds
+    private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
-import model.GameBoard;
-
-public class Game implements State{
     @Override
-    public void setup(JFrame window)
-    {
-        // FOR VISUALIZING PURPOSES
-        GameBoard gb = new GameBoard();
-        JPanel main_game_panel = new JPanel(new BorderLayout());
+    public void setup(JFrame window) {
+        // Initialize the game board
+        gameBoard = new GameBoard();
+
+        // Main panel setup
+        JPanel mainGamePanel = new JPanel(new BorderLayout());
+
+        // Timer panel setup
+        JPanel timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        timerLabel = new JLabel("Time: 0:00");
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        timerPanel.add(timerLabel);
+        timerPanel.setBackground(new Color(77, 135, 50));
+        timerPanel.setPreferredSize(new Dimension(800, 50));
+
+        // Wrapper panel for the game board
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         wrapperPanel.setBackground(new Color(77, 135, 50));
-        // for TESTING PURPOSES TO CHECK IF WE ARE ABLE TO COME BACK
-        // JButton menu_button = new JButton("MENU");
-        // menu_button.setFont(new Font("Arial", Font.BOLD, 20));
-        // wrapperPanel.add(menu_button);
+        wrapperPanel.setPreferredSize(new Dimension(800, 800));
 
-        // menu_button.addActionListener(e -> switch_to_menu());
-        wrapperPanel.setPreferredSize(new Dimension(800, 800)); 
+        // Game panel setup
+        gamePanel = new JPanel(new GridLayout(8, 8));
+        gamePanel.setPreferredSize(new Dimension(700, 700));
 
-        JPanel game_panel = new JPanel(new GridLayout(8, 8));
-        game_panel.setPreferredSize(new Dimension(700, 700));
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
-                game_panel.add(new Cell(color, gb.getPiece(row, col)));
-            }
-        }
-        wrapperPanel.add(game_panel);
+        // Add cells to the game panel
+        updateBoard();
+
+        // Add the game panel to the wrapper
+        wrapperPanel.add(gamePanel);
         wrapperPanel.setBorder(BorderFactory.createEmptyBorder(45, 0, 0, 0));
-        main_game_panel.add(wrapperPanel, BorderLayout.CENTER);
-        // setting up the window
+
+        // Add panels to the main game panel
+        mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
+        mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
+
+        // Setup the timer
+        setupTimer();
+
+        // Setup the window
         window.getContentPane().removeAll();
-        window.add(main_game_panel);
+        window.add(mainGamePanel);
         window.revalidate();
         window.repaint();
     }
 
+    /**
+     * Sets up the timer to update the time label every second.
+     */
+    private void setupTimer() {
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                elapsedTime++;
+                int minutes = elapsedTime / 60;
+                int seconds = elapsedTime % 60;
+                timerLabel.setText(String.format("Time: %d:%02d", minutes, seconds));
+            }
+        });
+        timer.start(); // Start the timer
+    }
 
-    private void switch_to_menu()
-    {
-        Checkers.game_state = new Menu();
-        Checkers.game_state.setup(Checkers.window);
+    @Override
+    public void handleCellClick(int row, int col) {
+        Piece piece = gameBoard.getPiece(row, col);
+
+        if (selectedPiece == null && piece != null) {
+            // Select a piece and highlight moves
+            selectedPiece = piece;
+            highlightPossibleMoves();
+        } else if (selectedPiece != null) {
+            // Check if clicked on a valid move
+            for (Cell cell : highlightedCells) {
+                if (cell.getXCoord() == row && cell.getYCoord() == col) {
+                    // Check if the move is a jump (capture)
+                    int middleRow = (selectedPiece.getRow() + row) / 2;
+                    int middleCol = (selectedPiece.getColumn() + col) / 2;
+
+                    if (Math.abs(selectedPiece.getRow() - row) == 2 &&
+                        Math.abs(selectedPiece.getColumn() - col) == 2) {
+                        // Remove the captured piece
+                        gameBoard.removePiece(middleRow, middleCol);
+                    }
+
+                    // Move the selected piece
+                    gameBoard.move(selectedPiece, row, col);
+                    selectedPiece = null; // Deselect piece
+                    clearHighlights(); // Clear highlighted moves
+                    updateBoard(); // Refresh UI
+                    return;
+                }
+            }
+            // Deselect if invalid move
+            selectedPiece = null;
+            clearHighlights();
+            updateBoard();
+        }}
+
+    private void highlightPossibleMoves() {
+        ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(selectedPiece, gameBoard.getBoardCopy());
+        for (ArrayList<int[]> path : moves) {
+            for (int i = 1; i < path.size(); i++) {
+                int[] move = path.get(i);
+                Cell cell = (Cell) gamePanel.getComponent(move[0] * 8 + move[1]);
+                cell.highlightCell(true);
+                highlightedCells.add(cell);
+            }
+        }
+    }
+
+    private void clearHighlights() {
+        for (Cell cell : highlightedCells) {
+            cell.highlightCell(false);
+        }
+        highlightedCells.clear();
+    }
+
+    private void updateBoard() {
+        gamePanel.removeAll();
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
+                Piece piece = gameBoard.getPiece(row, col);
+                Cell cell = new Cell(color, piece, row, col);
+                gamePanel.add(cell);
+            }
+        }
+        gamePanel.revalidate();
+        gamePanel.repaint();
+    }
+
+    /**
+     * Stops the timer.
+     */
+    public void stopTimer() {
+        if (timer != null) {
+            timer.stop();
+        }
     }
 }
