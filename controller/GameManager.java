@@ -1,6 +1,8 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.Random;
+
 import java.util.HashSet;
 
 import javax.swing.JPanel;
@@ -192,6 +194,30 @@ public class GameManager
     public GameStateEnum getState() {
     	return gameState;
     }
+    
+    public ArrayList<int[]> simpleAI() {
+        ArrayList<Piece> movablePieces = GetMovablePieces();
+
+        if (movablePieces.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Random random = new Random();
+        Piece piece = movablePieces.get(random.nextInt(movablePieces.size()));
+
+        ArrayList<ArrayList<int[]>> list1 = move.getPossibleMoves(piece, board.getBoardCopy());
+
+        ArrayList<int[]> longestPath = new ArrayList<>();
+        for (ArrayList<int[]> path : list1) {
+            if (path.size() > longestPath.size()) {
+                longestPath = path;
+            }
+        }
+        return longestPath;
+    }
+
+
+    
     
     public String toString() {
     	System.out.println("String: " + selectedPiece);
