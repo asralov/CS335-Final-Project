@@ -34,12 +34,18 @@ public class GameManager
     		this.gameState = GameStateEnum.Selected;
     		this.selectedPiece = clickedPiece;
     		ArrayList<ArrayList<int[]>> possiblePaths = move.getPossibleMoves(clickedPiece, board.getBoardCopy());
+    		System.out.println("Highlighted Cells: " );
     		for (ArrayList<int[]> path : possiblePaths) {
     			// i is initialized at 1 so that it doesn't highlight the clicked
     			// piece
+    			
     			for (int i = 1; i < path.size(); i++) {
-    				HighLightCell(path.get(i)[0], path.get(i)[1]);
+    				if (board.getPiece(path.get(i)[0], path.get(i)[1]) == null) {
+    					System.out.print(path.get(i)[0] + " " + path.get(i)[1]);
+    					HighLightCell(path.get(i)[0], path.get(i)[1]);
+    				}
     			}
+    			System.out.println();
     		}
     	}
     	// click on cell
@@ -98,6 +104,7 @@ public class GameManager
     	move_count++;
     	// NEED TO UPDATE: if a piece can take, then only highlight that piece
     	ArrayList<Piece> pieces = GetMovablePieces();
+    	System.out.print("Possible pieces: " + pieces);
     	for (int i = 0; i < pieces.size(); i++) {
     		HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
     	}

@@ -37,9 +37,15 @@ class GameManagerTest {
 		System.out.println(gameManager);
 		gameManager.OnPieceClick(3, 2);
 		System.out.println(gameManager);
+		
+		gameManager.OnPieceClick(5, 4);
+		System.out.println(gameManager);
+		gameManager.OnPieceClick(4, 3);
+		System.out.println(gameManager);
+		
 		gameManager.OnPieceClick(3, 2);
 		System.out.println(gameManager);
-		gameManager.OnPieceClick(2, 1);
+		gameManager.OnPieceClick(5, 4);
 		System.out.println(gameManager);
 	}
 
