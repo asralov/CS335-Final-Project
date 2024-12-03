@@ -6,10 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import controller.GameManager;
 import model.*;
 
 public class Game implements State {
     private GameBoard gameBoard; // Backend game board
+    private GameManager gameManager;
     private JPanel gamePanel; // UI panel for the board
     private Piece selectedPiece; // Currently selected piece
     private Timer timer; // Swing Timer
@@ -41,6 +44,8 @@ public class Game implements State {
         // Game panel setup
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
+
+        gameManager = new GameManager(gamePanel, gameBoard);
 
         // Add cells to the game panel
         updateBoard();
@@ -81,39 +86,41 @@ public class Game implements State {
 
     @Override
     public void handleCellClick(int row, int col) {
-        Piece piece = gameBoard.getPiece(row, col);
 
-        if (selectedPiece == null && piece != null) {
-            // Select a piece and highlight moves
-            selectedPiece = piece;
-            highlightPossibleMoves();
-        } else if (selectedPiece != null) {
-            // Check if clicked on a valid move
-            for (Cell cell : highlightedCells) {
-                if (cell.getXCoord() == row && cell.getYCoord() == col) {
-                    // Check if the move is a jump (capture)
-                    int middleRow = (selectedPiece.getRow() + row) / 2;
-                    int middleCol = (selectedPiece.getColumn() + col) / 2;
+        gameManager.OnPieceClick(row, col);
+        // Piece piece = gameBoard.getPiece(row, col);
 
-                    if (Math.abs(selectedPiece.getRow() - row) == 2 &&
-                        Math.abs(selectedPiece.getColumn() - col) == 2) {
-                        // Remove the captured piece
-                        gameBoard.removePiece(middleRow, middleCol);
-                    }
+        // if (selectedPiece == null && piece != null) {
+        //     // Select a piece and highlight moves
+        //     selectedPiece = piece;
+        //     highlightPossibleMoves();
+        // } else if (selectedPiece != null) {
+        //     // Check if clicked on a valid move
+        //     for (Cell cell : highlightedCells) {
+        //         if (cell.getXCoord() == row && cell.getYCoord() == col) {
+        //             // Check if the move is a jump (capture)
+        //             int middleRow = (selectedPiece.getRow() + row) / 2;
+        //             int middleCol = (selectedPiece.getColumn() + col) / 2;
 
-                    // Move the selected piece
-                    gameBoard.move(selectedPiece, row, col);
-                    selectedPiece = null; // Deselect piece
-                    clearHighlights(); // Clear highlighted moves
-                    updateBoard(); // Refresh UI
-                    return;
-                }
-            }
-            // Deselect if invalid move
-            selectedPiece = null;
-            clearHighlights();
+        //             if (Math.abs(selectedPiece.getRow() - row) == 2 &&
+        //                 Math.abs(selectedPiece.getColumn() - col) == 2) {
+        //                 // Remove the captured piece
+        //                 gameBoard.removePiece(middleRow, middleCol);
+        //             }
+
+        //             // Move the selected piece
+        //             gameBoard.move(selectedPiece, row, col);
+        //             selectedPiece = null; // Deselect piece
+        //             clearHighlights(); // Clear highlighted moves
+        //             updateBoard(); // Refresh UI
+        //             return;
+        //         }
+        //     }
+        //     // Deselect if invalid move
+        //     selectedPiece = null;
+            // clearHighlights();
             updateBoard();
-        }}
+        }
 
     private void highlightPossibleMoves() {
         ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(selectedPiece, gameBoard.getBoardCopy());
