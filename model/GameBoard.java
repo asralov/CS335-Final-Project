@@ -133,7 +133,8 @@ public class GameBoard {
     		System.out.println(x +  " " + y);
     		if (board[x][y] != null) {
     			Piece pieceOnPath = board[x][y];
-    			if (pieceColor.equals(Color.BLACK)) blackPieces.remove(pieceOnPath);
+				System.out.println("PIECE TO REMOVE: " + pieceOnPath);
+    			if (pieceOnPath.getColor().equals(Color.BLACK)) blackPieces.remove(pieceOnPath);
     			else whitePieces.remove(pieceOnPath);
     			board[x][y] = null;
     		}
@@ -144,6 +145,8 @@ public class GameBoard {
     	board[newX][newY] = newPiece;
     	if (pieceColor.equals(Color.BLACK)) blackPieces.add(newPiece);
     	else whitePieces.add(newPiece);
+
+		
     	
     }
 

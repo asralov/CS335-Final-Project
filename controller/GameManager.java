@@ -27,14 +27,14 @@ public class GameManager
     private PlayerType p2;
     
     private GameStateEnum gameState;
-    private Move move;
+    // private Move move;
     private Piece selectedPiece = null;
 	private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
     public GameManager()
     {
         this.board = new GameBoard();
-        this.move = new Move();
+        // this.move = new Move();
         this.move_count = 0;
         this.gameState = GameStateEnum.Unselected;
     }
@@ -51,7 +51,7 @@ public class GameManager
 			if (!IsPieceMoveable(clickedPiece, GetMovablePieces())) return;
     		this.gameState = GameStateEnum.Selected;
     		this.selectedPiece = clickedPiece;
-    		ArrayList<ArrayList<int[]>> possiblePaths = move.getPossibleMoves(clickedPiece, board.getBoardCopy());
+    		ArrayList<ArrayList<int[]>> possiblePaths = Move.getPossibleMoves(clickedPiece, board.getBoardCopy());
     		System.out.println("Highlighted Cells: " );
     		for (ArrayList<int[]> path : possiblePaths) {
     			// i is initialized at 1 so that it doesn't highlight the clicked
@@ -71,7 +71,8 @@ public class GameManager
     		// if clicked on cell while unselected the do nothing
 			System.out.println(this.gameState);
     		if (gameState.equals(GameStateEnum.Unselected)) return;
-    		ArrayList<ArrayList<int[]>> possiblePaths = move.getPossibleMoves(selectedPiece, board.getBoardCopy());
+    		ArrayList<ArrayList<int[]>> possiblePaths = Move.getPossibleMoves(selectedPiece, board.getBoardCopy());
+			System.out.println("POSSIBLE PATHS: " + possiblePaths);
             HashSet<int[]> possibleMoves = new HashSet<>();
             for (ArrayList<int[]> path : possiblePaths) {
                 for (int[] cell : path) {
@@ -94,13 +95,31 @@ public class GameManager
             		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
             			System.out.println("FOUND PATH, MOVING...");
             			board.move(path, selectedPiece.getColor());
-            			break;
+            			// break;
             		}
             	}
             	
-                // Perform move
-                // board.movePiece(selectedPiece, x, y); // Implement movePiece method
+				// INCOMPLETE CODE FOR CHECKING MULTIPLE JUMPS
+				// boolean canJumpAgain = false;
+                // this.selectedPiece = board.getPiece(x, y);
+				// if (this.selectedPiece != null) {
+				// 	for (ArrayList<int[]> path: Move.getPossibleMoves(clickedPiece, board.getBoardCopy())) {
+				// 		if (path.size() > 2) {
+				// 			canJumpAgain = true;
+				// 		}
+				// 	}
+				// }
             	
+				// if (canJumpAgain) {
+				// 	ResetHighlights();
+				// 	HighLightCell();
+
+				// 	Cell cellToHighlight = (Cell) gamePanel.getComponent(this.selectedPiece.getRow() * 8 + this.selectedPiece.getColumn());
+				// 	cellToHighlight.highlightCell(true);
+					
+				// } else {
+					
+				// }
                 this.selectedPiece = null;
                 this.gameState = GameStateEnum.Unselected;
                 NextMove();
@@ -116,7 +135,7 @@ public class GameManager
     }
     
     public void HighLightCell() {
-    	System.out.println("UPDATING BOARD...");
+    	//System.out.println("UPDATING BOARD...");
         gamePanel.removeAll();
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -140,16 +159,14 @@ public class GameManager
     public void NextMove() {
 		ResetHighlights();
     	move_count++;
-    	// NEED TO UPDATE: if a piece can take, then only highlight that piece
     	ArrayList<Piece> pieces = GetMovablePieces();
-    	System.out.print("Possible pieces: " + pieces);
+    	//System.out.print("Possible pieces: " + pieces);
 		HighLightCell();
-    	// for (int i = 0; i < pieces.size(); i++) {
-    	// 	//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
-		// 	HighLightCell();
-    	// }
-		
-    	
+    	for (int i = 0; i < pieces.size(); i++) {
+    		//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
+			Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
+			cellToHighlight.highlightCell(true);
+    	}
     }
     
     public void ResetHighlights() {
@@ -168,7 +185,7 @@ public class GameManager
 		ArrayList<Piece> takeables = new ArrayList<Piece>();
     	
     	for (int i = 0; i < pieces.size(); i ++) {
-			ArrayList<ArrayList<int[]>> paths = move.getPossibleMoves(pieces.get(i), board.getBoardCopy());
+			ArrayList<ArrayList<int[]>> paths = Move.getPossibleMoves(pieces.get(i), board.getBoardCopy());
     		if (paths.size() != 0 ) {
 				for (ArrayList<int[]> path: paths) {
 					if (path.size() > 2) {
@@ -205,7 +222,7 @@ public class GameManager
         Random random = new Random();
         Piece piece = movablePieces.get(random.nextInt(movablePieces.size()));
 
-        ArrayList<ArrayList<int[]>> list1 = move.getPossibleMoves(piece, board.getBoardCopy());
+        ArrayList<ArrayList<int[]>> list1 = Move.getPossibleMoves(piece, board.getBoardCopy());
 
         ArrayList<int[]> longestPath = new ArrayList<>();
         for (ArrayList<int[]> path : list1) {
@@ -215,9 +232,6 @@ public class GameManager
         }
         return longestPath;
     }
-
-
-    
     
     public String toString() {
     	System.out.println("String: " + selectedPiece);
