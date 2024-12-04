@@ -17,6 +17,7 @@ public class Game implements State {
     private Piece selectedPiece; // Currently selected piece
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
+    private JLabel turnLabel; // Label to display the turn
     private int elapsedTime = 0; // Time in seconds
     private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 

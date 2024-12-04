@@ -3,6 +3,7 @@ package model;
 import java.util.ArrayList;
 
 public class Move {
+	static boolean isKing1 = true;
 
 	public static ArrayList<ArrayList<int[]>> getPossibleMoves(Piece piece, Piece[][] board) {
 		ArrayList<ArrayList<int[]>> list1 = new ArrayList<>();
@@ -11,6 +12,7 @@ public class Move {
 		int x = piece.getRow();
 		int y = piece.getColumn();
 		boolean isKing = piece.isKing();
+		isKing1 = isKing;
 		Color color = piece.getColor();
 
 		int[][] directions = getMoveDirections(isKing, color);
@@ -94,7 +96,7 @@ public class Move {
 			Piece temp = board[x1][y1];
 			board[x1][y1] = null;
 
-			for (int[] nextDirection : getMoveDirections(true, color)) {
+			for (int[] nextDirection : getMoveDirections(isKing1, color)) {
 				catchPiece(x2, y2, board, color, nextDirection, newPath, list_capture);
 			}
 
@@ -153,30 +155,29 @@ public class Move {
 
 
 
-//	public static void main(String[] args) {
-//		Piece[][] board = new Piece[8][8];
-//		board[2][3] = new Piece(Color.WHITE, 2, 3);
-//		board[3][4] = new Piece(Color.BLACK, 3, 4);
-//		board[5][6] = new Piece(Color.BLACK, 5, 6);
-//		board[3][2] = new Piece(Color.BLACK, 3, 2);
-//		board[4][5] = null;  
-//		board[6][7] = null;  
-//
-//		
-//		Piece piece = board[2][3];
-//		
-//		printBoard(board);
-//		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
-//
-//		System.out.println("Possible moves for the piece:");
-//		for (ArrayList<int[]> move : moves) {
-//			System.out.print("Move path: ");
-//			for (int[] step : move) {
-//				System.out.print("(" + step[0] + ", " + step[1] + ") ");
-//			}
-//			System.out.println();
-//		}
-//	}
+	public static void main(String[] args) {
+		Piece[][] board = new Piece[8][8];
+		board[3][4] = new Piece(Color.WHITE, 3, 4);
+		board[3][2] = new Piece(Color.WHITE, 3, 2);
+		board[4][1] = new Piece(Color.BLACK, 4, 1);
+		board[5][4] = null;  
+		board[6][7] = null;  
+
+		
+		Piece piece = board[4][1];
+		
+		printBoard(board);
+		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
+
+		System.out.println("Possible moves for the piece:");
+		for (ArrayList<int[]> move : moves) {
+			System.out.print("Move path: ");
+			for (int[] step : move) {
+				System.out.print("(" + step[0] + ", " + step[1] + ") ");
+			}
+			System.out.println();
+		}
+	}
 
 
 }
