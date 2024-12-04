@@ -145,10 +145,10 @@ public class GameBoard {
     	board[newX][newY] = newPiece;
     	if (pieceColor.equals(Color.BLACK)) blackPieces.add(newPiece);
     	else whitePieces.add(newPiece);
-
-		
     	
     }
+
+	
 
     // public Cell get_cell(int row, int col)
     // {
