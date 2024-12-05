@@ -5,6 +5,7 @@ import javax.swing.*;
 public class Checkers {
 	public static State game_state;
     public static JFrame window;
+    public static String mode;
     public static void main(String[] args) {
         
         window = new JFrame("Checkers");
