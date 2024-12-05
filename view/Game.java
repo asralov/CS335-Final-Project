@@ -38,6 +38,15 @@ public class Game implements State, GameManager.GameOverListener {
 
         // Timer panel setup
         JPanel timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton menu_btn = new JButton("MENU");
+        Menu.styleButton(menu_btn);
+        menu_btn.addActionListener(e -> Does_User_Want());
+        Dimension s = new Dimension(60, 30);
+        menu_btn.setPreferredSize(s);
+        menu_btn.setMinimumSize(s);
+        menu_btn.setMaximumSize(s);
+
+        timerPanel.add(menu_btn);
         timerLabel = new JLabel("Time: 0:00");
         timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
         timerPanel.add(timerLabel);
@@ -50,12 +59,14 @@ public class Game implements State, GameManager.GameOverListener {
         scorePanel.setBackground(new Color(77, 135, 50));
         scorePanel.setPreferredSize(new Dimension(100, 500)); // Adjust width as needed
 
+
         scoreLabel = new JLabel("White Score: 0");
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 10));
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
         scoreLabel.setForeground(Color.WHITE);
+        
 
         scoreLabel1 = new JLabel("Black Score: 0");
-        scoreLabel1.setFont(new Font("Arial", Font.BOLD, 10));
+        scoreLabel1.setFont(new Font("Arial", Font.BOLD, 14));
         scoreLabel1.setForeground(Color.WHITE);
 
         // Add score labels to the score panel
@@ -80,7 +91,7 @@ public class Game implements State, GameManager.GameOverListener {
 
         // Add the game panel to the wrapper
         wrapperPanel.add(gamePanel);
-        wrapperPanel.setBorder(BorderFactory.createEmptyBorder(45, 0, 0, 0));
+        // wrapperPanel.setBorder(BorderFactory.createEmptyBorder(45, 0, 0, 0));
 
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
@@ -96,6 +107,62 @@ public class Game implements State, GameManager.GameOverListener {
         window.revalidate();
         window.repaint();
     }
+
+
+    private void Does_User_Want() {
+        // Create the dialog
+        JDialog dialog = new JDialog();
+        // dialog.setTitle("");
+        dialog.setSize(500, 350);
+        dialog.setLayout(new GridLayout(2, 1));
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setModal(true);
+
+        // Create a label with the message
+        JLabel label = new JLabel("DO YOU WANT TO GO THE MAIN MENU?", SwingConstants.CENTER);
+        dialog.add(label);
+
+        // Create a panel for the buttons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+
+        // Create the "Yes" button
+        JButton yesButton = new JButton("YES");
+        yesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("User chose to go to the menu.");
+                // Add logic for "Yes" button here
+                GoToMenu();
+                dialog.dispose(); // Close the dialog
+            }
+        });
+
+        // Create the "No" button
+        JButton noButton = new JButton("NO");
+        noButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("User chose not to go to the menu.");
+                // Add logic for "No" button here
+                dialog.dispose(); // Close the dialog
+            }
+        });
+
+        // Add buttons to the button panel
+        buttonPanel.add(yesButton);
+        buttonPanel.add(noButton);
+
+        // Add the button panel to the dialog
+        dialog.add(buttonPanel);
+
+        // Center the dialog on the screen
+        dialog.setLocationRelativeTo(null);
+
+        // Show the dialog
+        dialog.setVisible(true);
+    }
+
 
     /**
      * Sets up the timer to update the time label every second.
@@ -237,7 +304,13 @@ public class Game implements State, GameManager.GameOverListener {
         Checkers.game_state.setup(Checkers.window);
         Checkers.window.setVisible(true);
         dialog.dispose();
+    }
 
+    // used for menu button
+    public void GoToMenu() {
+        Checkers.game_state = new Menu();
+        Checkers.game_state.setup(Checkers.window);
+        Checkers.window.setVisible(true);
     }
 
     /**
