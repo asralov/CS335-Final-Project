@@ -158,13 +158,14 @@ public class Move {
 	public static void main(String[] args) {
 		Piece[][] board = new Piece[8][8];
 		board[3][4] = new Piece(Color.WHITE, 3, 4);
-		board[3][2] = new Piece(Color.WHITE, 3, 2);
+		//board[3][2] = new Piece(Color.WHITE, 3, 2);
 		board[4][1] = new Piece(Color.BLACK, 4, 1);
 		board[5][4] = null;  
 		board[6][7] = null;  
 
 		
 		Piece piece = board[4][1];
+		piece.ToKing();
 		
 		printBoard(board);
 		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
