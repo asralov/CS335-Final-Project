@@ -120,9 +120,10 @@ public class GameBoard {
     }
     
 
-    public void move(ArrayList<int[]> path, Color pieceColor, boolean isKing) {
+    public ArrayList<Piece> move(ArrayList<int[]> path, Color pieceColor, boolean isKing) {
         // Remove captured pieces along the path
     	
+		ArrayList<Piece> out = new ArrayList<Piece>();
         for (int i = 0; i < path.size() - 1; i++) {
             int x = path.get(i)[0];
             int y = path.get(i)[1];
@@ -130,6 +131,7 @@ public class GameBoard {
             
             if (board[x][y] != null) {
                 Piece pieceOnPath = board[x][y];
+				out.add(pieceOnPath);
                 System.out.println("PIECE TO REMOVE: " + pieceOnPath);
                 if (pieceOnPath.getColor().equals(Color.BLACK)) {
                     blackPieces.remove(pieceOnPath);
@@ -144,6 +146,7 @@ public class GameBoard {
         int newX = path.get(path.size() - 1)[0];
         int newY = path.get(path.size() - 1)[1];
         Piece newPiece = new Piece(pieceColor, newX, newY);
+		out.add(newPiece);
         
         
         if (isKing)
@@ -163,6 +166,8 @@ public class GameBoard {
         } else {
             whitePieces.add(newPiece);
         }
+		
+		return out;
     }
     
     public Piece getPiece(int x, int y) {

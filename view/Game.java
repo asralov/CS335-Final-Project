@@ -12,6 +12,7 @@ import javax.swing.*;
 import controller.GameManager;
 import controller.GameModeEnum;
 import controller.GameManager.GameOverEvent;
+import controller.GameManager.GetMovedPieces;
 import model.*;
 
 
@@ -215,6 +216,21 @@ public class Game implements State, GameManager.GameOverListener {
     public void GameOverOccurred(GameOverEvent event) {
         String winner = event.getWinner();
         showGameOverDialog(winner);
+    }
+
+    // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE. 
+    @Override
+    public void GetMovedPieces(GetMovedPieces event) {
+        ArrayList<Piece> pieces = event.getPieces();
+        // first piece - old location of the piece
+        // last piece - new location of the piece
+        // everything in between - eaten pieces
+        
+        System.out.println("OLD LOCATION: " + pieces.get(0));
+        for (int i = 1; i < pieces.size() - 1; i++) {
+            System.out.println("EATEN PIECE: " + pieces.get(i));
+        }
+        System.out.println("NEW LOCATION: " + pieces.get(pieces.size()-1));
     }
 
     private void showGameOverDialog(String winner) {

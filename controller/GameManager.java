@@ -11,6 +11,8 @@ import model.Piece;
 import model.GameBoard;
 import model.Move;
 import view.Cell;
+import view.Game;
+
 //import model.Color;
 import java.awt.Color;
 
@@ -115,7 +117,8 @@ public class GameManager
             	for (ArrayList<int[]> path : possiblePaths) {
             		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
             			System.out.println("FOUND PATH, MOVING...");
-            			board.move(path, selectedPiece.getColor(), selectedPiece.isKing());
+            			ArrayList<Piece> histogram = board.move(path, selectedPiece.getColor(), selectedPiece.isKing());
+						SendPiecesToHistogram(histogram);
             			// break;
             		}
             	}
@@ -194,7 +197,8 @@ public class GameManager
             ArrayList<int[]> computerMove = currentPlayer.make_a_move(GetMovablePieces(), board.getBoardCopy());
             if (!computerMove.isEmpty()) {
 				Piece pieceToMove = board.getPiece(computerMove.get(0)[0], computerMove.get(0)[1]);
-                board.move(computerMove, pieceToMove.getColor(), pieceToMove.isKing());
+                ArrayList<Piece> histogram = board.move(computerMove, pieceToMove.getColor(), pieceToMove.isKing());
+				SendPiecesToHistogram(histogram);
                 CheckGameOver();
 				
 				NextMove();
@@ -303,9 +307,15 @@ public class GameManager
         }
     }
 
-    //Define the listener interface
+	private void SendPiecesToHistogram(ArrayList<Piece> pieces) {
+		if (gameOverListener != null) {
+			gameOverListener.GetMovedPieces(new GetMovedPieces(this, pieces));
+		}
+	}
+
     public interface GameOverListener extends java.util.EventListener {
         void GameOverOccurred(GameOverEvent event);
+		void GetMovedPieces(GetMovedPieces event);
     }
     
     public int[] calculateScore() {
@@ -351,17 +361,31 @@ public class GameManager
     }
 
 	public class GameOverEvent extends EventObject {
-    private final String winner;
+		private final String winner;
 
-    public GameOverEvent(Object source, String winner) {
-        super(source);
-        this.winner = winner;
-    }
+		public GameOverEvent(Object source, String winner) {
+			super(source);
+			this.winner = winner;
+		}
 
-    public String getWinner() {
-        return winner;
-    }
-}
+
+		public String getWinner() {
+			return winner;
+		}
+	}
+
+	public class GetMovedPieces extends EventObject {
+		private final ArrayList<Piece> pieces;
+
+		public GetMovedPieces(Object source, ArrayList<Piece> pieces) {
+			super(source);
+			this.pieces = pieces;
+		}
+
+		public ArrayList<Piece> getPieces() {
+			return pieces;
+		}
+	}
     
     
     
