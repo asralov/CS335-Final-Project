@@ -24,6 +24,7 @@ public class Game implements State, GameManager.GameOverListener {
     private JLabel turnLabel; // Label to display the turn
     private JLabel capturedPiecesLabelWhite;
     private JLabel capturedPiecesLabelBlack;
+    private JPanel timerPanel;
     private int elapsedTime = 0; // Time in seconds
     private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
@@ -52,7 +53,7 @@ public class Game implements State, GameManager.GameOverListener {
         mainGamePanel.setOpaque(false);
 
         // Timer panel setup
-        JPanel timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton menu_btn = new JButton("MENU");
         Menu.styleButton(menu_btn);
         menu_btn.addActionListener(e -> Does_User_Want());
@@ -71,11 +72,11 @@ public class Game implements State, GameManager.GameOverListener {
         // timerPanel.setBackground(new Color(77, 135, 50));
         timerPanel.setPreferredSize(new Dimension(1000, 50));
 
-        // Score panel setup
-        JPanel scorePanel = new JPanel(); 
-        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS)); // Arrange labels vertically
-        // scorePanel.setBackground(new Color(77, 135, 50));
-        scorePanel.setPreferredSize(new Dimension(100, 500)); // Adjust width as needed
+        // // Score panel setup
+        // JPanel scorePanel = new JPanel(); 
+        // scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS)); // Arrange labels vertically
+        // // scorePanel.setBackground(new Color(77, 135, 50));
+        // scorePanel.setPreferredSize(new Dimension(100, 500)); // Adjust width as needed
 
 
         // scoreLabel = new JLabel("White Score: 0");
@@ -86,6 +87,7 @@ public class Game implements State, GameManager.GameOverListener {
         capturedPiecesLabelWhite = new JLabel("x0"); // Initial count
         capturedPiecesLabelWhite.setFont(new Font("Arial", Font.BOLD, 20));
         capturedPiecesLabelWhite.setForeground(Color.WHITE);
+        // capturedPiecesLabelWhite.setBackground(new Color(0, 0, 0, 0));
 
         // Create a panel to hold the image and text
         JPanel piecePanelWhite = new JPanel();
@@ -106,6 +108,8 @@ public class Game implements State, GameManager.GameOverListener {
         capturedPiecesLabelBlack = new JLabel("x0"); // Initial count
         capturedPiecesLabelBlack.setFont(new Font("Arial", Font.BOLD, 20));
         capturedPiecesLabelBlack.setForeground(Color.WHITE);
+        // capturedPiecesLabelBlack.setBackground(new Color(0, 0, 0, 0));
+
 
         // Create a panel to hold the image and text
         JPanel piecePanelBlack = new JPanel();
@@ -116,11 +120,10 @@ public class Game implements State, GameManager.GameOverListener {
         CirclePanelBlack circleBlack = new CirclePanelBlack();
         circleBlack.setPreferredSize(new Dimension(30, 30));
         circleBlack.setOpaque(true);
-        piecePanelBlack.add(capturedPiecesLabelBlack);
         piecePanelBlack.add(circleBlack);
-        
+        piecePanelBlack.add(capturedPiecesLabelBlack);
 
-        timerPanel.add(circleBlack);
+        timerPanel.add(piecePanelBlack);
 
         // scoreLabel1 = new JLabel("Black Score: 0");
         // scoreLabel1.setFont(new Font("Arial", Font.BOLD, 14));
@@ -155,13 +158,13 @@ public class Game implements State, GameManager.GameOverListener {
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
-        mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
+        // mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
 
         // Setup the timer
         setupTimer();
         timerPanel.setOpaque(false);
         wrapperPanel.setOpaque(false);
-        scorePanel.setOpaque(false);
+        // scorePanel.setOpaque(false);
 
         // Setup the window
         window.getContentPane().removeAll();
@@ -246,9 +249,24 @@ public class Game implements State, GameManager.GameOverListener {
     public void handleCellClick(int row, int col) {
 
         gameManager.OnPieceClick(row, col);
+        // Set background to match parent and ensure no black background appears
+        // capturedPiecesLabelBlack.setBackground(new Color(0,0,0,255));
+        // capturedPiecesLabelWhite.setBackground(new Color(0,0,0,255));
+        // capturedPiecesLabelBlack.setOpaque(true); // or true, depending on your needs
+        // capturedPiecesLabelWhite.setOpaque(true); // or true, depending on your needs
+
         int[] currentScore = gameManager.calculateScore();  
-        capturedPiecesLabelWhite.setText("x" + currentScore[1]);
-        capturedPiecesLabelBlack.setText("x" + currentScore[0]);
+        String blackScore = "x" + currentScore[0];
+        String whiteScore = "x" + currentScore[1];
+        capturedPiecesLabelWhite.setText(whiteScore);
+        capturedPiecesLabelBlack.setText(blackScore);
+        timerPanel.revalidate();
+        timerPanel.repaint();
+
+
+        // Ensure repaint to reflect changes
+        // capturedPiecesLabelBlack.repaint();
+        // capturedPiecesLabelWhite.repaint();
         // Piece piece = gameBoard.getPiece(row, col);
 
         // if (selectedPiece == null && piece != null) {
