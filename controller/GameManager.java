@@ -106,7 +106,7 @@ public class GameManager
             	for (ArrayList<int[]> path : possiblePaths) {
             		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
             			System.out.println("FOUND PATH, MOVING...");
-            			board.move(path, selectedPiece.getColor());
+            			board.move(path, selectedPiece.getColor(), selectedPiece.isKing());
             			// break;
             		}
             	}
@@ -270,6 +270,31 @@ public class GameManager
         void GameOverOccurred(GameOverEvent event);
     }
     
+    public int[] calculateScore() {
+        int whiteCount = 0;
+        int blackCount = 0;
+
+        Piece[][] boardArray = board.getBoard();
+        for (int row = 0; row < boardArray.length; row++) {
+            for (int col = 0; col < boardArray[row].length; col++) {
+                Piece piece = boardArray[row][col];
+                if (piece != null) {
+                    if (piece.getColor() == model.Color.WHITE) {
+                        whiteCount++;
+                    } else if (piece.getColor() == model.Color.BLACK) {
+                        blackCount++;
+                    }
+                }
+            }
+        }
+
+        int whiteScore = 12 - whiteCount;  
+        int blackScore = 12 - blackCount;  
+
+        return new int[]{whiteScore, blackScore};
+    }
+
+    
     public String toString() {
     	System.out.println("String: " + selectedPiece);
     	Piece[][] newBoard = board.getBoard();
@@ -313,5 +338,7 @@ public class GameManager
         return winner;
     }
 }
+    
+    
     
 }

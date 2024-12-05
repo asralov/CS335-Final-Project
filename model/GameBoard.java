@@ -127,29 +127,51 @@ public class GameBoard {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
     
-    public void move(ArrayList<int[]> path, Color pieceColor) {
-    	for (int i = 0; i < path.size() - 1; i++) {
-    		
-    		int x = path.get(i)[0];
-    		int y = path.get(i)[1];
-    		System.out.println(x +  " " + y);
-    		if (board[x][y] != null) {
-    			Piece pieceOnPath = board[x][y];
-				System.out.println("PIECE TO REMOVE: " + pieceOnPath);
-    			if (pieceOnPath.getColor().equals(Color.BLACK)) blackPieces.remove(pieceOnPath);
-    			else whitePieces.remove(pieceOnPath);
-    			board[x][y] = null;
-    		}
-    	}
-    	int newX = path.get(path.size()-1)[0];
-    	int newY = path.get(path.size()-1)[1];
-    	Piece newPiece = new Piece(pieceColor, newX, newY);
-    	board[newX][newY] = newPiece;
-    	if (pieceColor.equals(Color.BLACK)) blackPieces.add(newPiece);
-    	else whitePieces.add(newPiece);
-    	
-    }
 
+    public void move(ArrayList<int[]> path, Color pieceColor, boolean isKing) {
+        // Remove captured pieces along the path
+    	
+        for (int i = 0; i < path.size() - 1; i++) {
+            int x = path.get(i)[0];
+            int y = path.get(i)[1];
+            System.out.println(x + " " + y);
+            
+            if (board[x][y] != null) {
+                Piece pieceOnPath = board[x][y];
+                System.out.println("PIECE TO REMOVE: " + pieceOnPath);
+                if (pieceOnPath.getColor().equals(Color.BLACK)) {
+                    blackPieces.remove(pieceOnPath);
+                } else {
+                    whitePieces.remove(pieceOnPath);
+                }
+                board[x][y] = null;
+            }
+        }
+
+       
+        int newX = path.get(path.size() - 1)[0];
+        int newY = path.get(path.size() - 1)[1];
+        Piece newPiece = new Piece(pieceColor, newX, newY);
+        
+        
+        if (isKing)
+        	newPiece.ToKing();
+        
+       
+        if ((pieceColor.equals(Color.BLACK) && newX == 0) || (pieceColor.equals(Color.WHITE) && newX == 7)) {
+            newPiece.ToKing();  
+            System.out.println("Piece promoted to king!");
+        }
+        board[newX][newY] = newPiece;
+        
+
+        // Update the pieces list
+        if (pieceColor.equals(Color.BLACK)) {
+            blackPieces.add(newPiece);
+        } else {
+            whitePieces.add(newPiece);
+        }
+    }
 
 
     // public Cell get_cell(int row, int col)

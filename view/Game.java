@@ -22,9 +22,12 @@ public class Game implements State, GameManager.GameOverListener {
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
     private JLabel turnLabel; // Label to display the turn
+    private JLabel scoreLabel;
+    private JLabel scoreLabel1;
     private int elapsedTime = 0; // Time in seconds
     private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
+   
     @Override
     public void setup(JFrame window) {
         // Initialize the game board
@@ -40,6 +43,26 @@ public class Game implements State, GameManager.GameOverListener {
         timerPanel.add(timerLabel);
         timerPanel.setBackground(new Color(77, 135, 50));
         timerPanel.setPreferredSize(new Dimension(800, 50));
+
+        // Score panel setup
+        JPanel scorePanel = new JPanel(); 
+        scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS)); // Arrange labels vertically
+        scorePanel.setBackground(new Color(77, 135, 50));
+        scorePanel.setPreferredSize(new Dimension(100, 500)); // Adjust width as needed
+
+        scoreLabel = new JLabel("White Score: 0");
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 10));
+        scoreLabel.setForeground(Color.WHITE);
+
+        scoreLabel1 = new JLabel("Black Score: 0");
+        scoreLabel1.setFont(new Font("Arial", Font.BOLD, 10));
+        scoreLabel1.setForeground(Color.WHITE);
+
+        // Add score labels to the score panel
+        scorePanel.add(Box.createVerticalStrut(20)); // Spacer for aesthetics
+        scorePanel.add(scoreLabel);
+        scorePanel.add(Box.createVerticalStrut(20)); // Spacer between labels
+        scorePanel.add(scoreLabel1);
 
         // Wrapper panel for the game board
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -62,6 +85,7 @@ public class Game implements State, GameManager.GameOverListener {
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
+        mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
 
         // Setup the timer
         setupTimer();
@@ -93,6 +117,9 @@ public class Game implements State, GameManager.GameOverListener {
     public void handleCellClick(int row, int col) {
 
         gameManager.OnPieceClick(row, col);
+        int[] currentScore = gameManager.calculateScore();  
+        scoreLabel.setText("White Score: " + currentScore[1]);
+        scoreLabel1.setText("Black Score: " + currentScore[0]);
         // Piece piece = gameBoard.getPiece(row, col);
 
         // if (selectedPiece == null && piece != null) {
