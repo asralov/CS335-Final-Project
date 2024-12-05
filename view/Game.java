@@ -22,8 +22,8 @@ public class Game implements State, GameManager.GameOverListener {
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
     private JLabel turnLabel; // Label to display the turn
-    private JLabel scoreLabel;
-    private JLabel scoreLabel1;
+    private JLabel capturedPiecesLabelWhite;
+    private JLabel capturedPiecesLabelBlack;
     private int elapsedTime = 0; // Time in seconds
     private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
@@ -34,7 +34,22 @@ public class Game implements State, GameManager.GameOverListener {
         gameBoard = new GameBoard();
 
         // Main panel setup
-        JPanel mainGamePanel = new JPanel(new BorderLayout());
+        // JPanel mainGamePanel = new JPanel(new BorderLayout());
+        // creating the base panel with BorderLayout
+        ImageIcon bg_icon = new ImageIcon("./assets/game_bg.jpg");
+        Image bg_img = bg_icon.getImage();
+        // Create a panel with overridden paintComponent
+        JPanel mainGamePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bg_img != null) {
+                    g.drawImage(bg_img, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+        mainGamePanel.setLayout(new BorderLayout());
+        mainGamePanel.setOpaque(false);
 
         // Timer panel setup
         JPanel timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -47,37 +62,81 @@ public class Game implements State, GameManager.GameOverListener {
         menu_btn.setMaximumSize(s);
 
         timerPanel.add(menu_btn);
-        timerLabel = new JLabel("Time: 0:00");
+        timerLabel = new JLabel("0:00");
         timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        timerLabel.setForeground(Color.WHITE);
         timerPanel.add(timerLabel);
-        timerPanel.setBackground(new Color(77, 135, 50));
-        timerPanel.setPreferredSize(new Dimension(800, 50));
+
+        
+        // timerPanel.setBackground(new Color(77, 135, 50));
+        timerPanel.setPreferredSize(new Dimension(1000, 50));
 
         // Score panel setup
         JPanel scorePanel = new JPanel(); 
         scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS)); // Arrange labels vertically
-        scorePanel.setBackground(new Color(77, 135, 50));
+        // scorePanel.setBackground(new Color(77, 135, 50));
         scorePanel.setPreferredSize(new Dimension(100, 500)); // Adjust width as needed
 
 
-        scoreLabel = new JLabel("White Score: 0");
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        scoreLabel.setForeground(Color.WHITE);
+        // scoreLabel = new JLabel("White Score: 0");
+        // scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        // scoreLabel.setForeground(Color.WHITE);
+
+        // Create a JLabel for the captured piece count
+        capturedPiecesLabelWhite = new JLabel("x0"); // Initial count
+        capturedPiecesLabelWhite.setFont(new Font("Arial", Font.BOLD, 20));
+        capturedPiecesLabelWhite.setForeground(Color.WHITE);
+
+        // Create a panel to hold the image and text
+        JPanel piecePanelWhite = new JPanel();
+        piecePanelWhite.setLayout(new FlowLayout(FlowLayout.LEFT));
+        piecePanelWhite.setBackground(new Color(0, 0, 0, 0)); // Transparent background if needed
+
+        // Add the image and text to the panel
+        CirclePanelWhite circleWhite = new CirclePanelWhite();
+        circleWhite.setPreferredSize(new Dimension(30, 30));
+        circleWhite.setOpaque(true);
+        piecePanelWhite.add(circleWhite);
+        piecePanelWhite.add(capturedPiecesLabelWhite);
+
+        // Add the panel to your GUI layout
+        timerPanel.add(piecePanelWhite); // Replace 'yourPanel' with your container
+
+        // Create a JLabel for the captured piece count
+        capturedPiecesLabelBlack = new JLabel("x0"); // Initial count
+        capturedPiecesLabelBlack.setFont(new Font("Arial", Font.BOLD, 20));
+        capturedPiecesLabelBlack.setForeground(Color.WHITE);
+
+        // Create a panel to hold the image and text
+        JPanel piecePanelBlack = new JPanel();
+        piecePanelBlack.setLayout(new FlowLayout(FlowLayout.LEFT));
+        piecePanelBlack.setBackground(new Color(0, 0, 0, 0)); // Transparent background if needed
+
+        // Add the image and text to the panel
+        CirclePanelBlack circleBlack = new CirclePanelBlack();
+        circleBlack.setPreferredSize(new Dimension(30, 30));
+        circleBlack.setOpaque(true);
+        piecePanelBlack.add(capturedPiecesLabelBlack);
+        piecePanelBlack.add(circleBlack);
         
 
-        scoreLabel1 = new JLabel("Black Score: 0");
-        scoreLabel1.setFont(new Font("Arial", Font.BOLD, 14));
-        scoreLabel1.setForeground(Color.WHITE);
+        timerPanel.add(circleBlack);
+
+        // scoreLabel1 = new JLabel("Black Score: 0");
+        // scoreLabel1.setFont(new Font("Arial", Font.BOLD, 14));
+        // scoreLabel1.setForeground(Color.WHITE);
+
+        
 
         // Add score labels to the score panel
-        scorePanel.add(Box.createVerticalStrut(20)); // Spacer for aesthetics
-        scorePanel.add(scoreLabel);
-        scorePanel.add(Box.createVerticalStrut(20)); // Spacer between labels
-        scorePanel.add(scoreLabel1);
+        // scorePanel.add(Box.createVerticalStrut(20)); // Spacer for aesthetics
+        // scorePanel.add(scoreLabel);
+        // scorePanel.add(Box.createVerticalStrut(20)); // Spacer between labels
+        // scorePanel.add(scoreLabel1);
 
         // Wrapper panel for the game board
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        wrapperPanel.setBackground(new Color(77, 135, 50));
+        // wrapperPanel.setBackground(new Color(77, 135, 50));
         wrapperPanel.setPreferredSize(new Dimension(800, 800));
 
         // Game panel setup
@@ -100,6 +159,9 @@ public class Game implements State, GameManager.GameOverListener {
 
         // Setup the timer
         setupTimer();
+        timerPanel.setOpaque(false);
+        wrapperPanel.setOpaque(false);
+        scorePanel.setOpaque(false);
 
         // Setup the window
         window.getContentPane().removeAll();
@@ -174,7 +236,7 @@ public class Game implements State, GameManager.GameOverListener {
                 elapsedTime++;
                 int minutes = elapsedTime / 60;
                 int seconds = elapsedTime % 60;
-                timerLabel.setText(String.format("Time: %d:%02d", minutes, seconds));
+                timerLabel.setText(String.format("%d:%02d", minutes, seconds));
             }
         });
         timer.start(); // Start the timer
@@ -185,8 +247,8 @@ public class Game implements State, GameManager.GameOverListener {
 
         gameManager.OnPieceClick(row, col);
         int[] currentScore = gameManager.calculateScore();  
-        scoreLabel.setText("White Score: " + currentScore[1]);
-        scoreLabel1.setText("Black Score: " + currentScore[0]);
+        capturedPiecesLabelWhite.setText("x" + currentScore[1]);
+        capturedPiecesLabelBlack.setText("x" + currentScore[0]);
         // Piece piece = gameBoard.getPiece(row, col);
 
         // if (selectedPiece == null && piece != null) {
@@ -320,5 +382,48 @@ public class Game implements State, GameManager.GameOverListener {
         if (timer != null) {
             timer.stop();
         }
+    }
+}
+
+
+
+// class CirclePanel extends JPanel {
+//     private int diameter;
+
+//     public CirclePanel(int diameter, Color color) {
+//         this.diameter = diameter;
+//         this.setPreferredSize(new Dimension(diameter, diameter)); // Set the preferred size of the circle
+//         this.setBackground(color); // Transparent background
+//     }
+
+//     @Override
+//     protected void paintComponent(Graphics g) {
+//         super.paintComponent(g);
+//         Graphics2D g2d = (Graphics2D) g;
+//         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//         g2d.setColor(Color.WHITE); // Set the circle color to white
+//         g2d.fillOval(0, 0, diameter, diameter); // Draw the circle
+//     }
+// }
+
+class CirclePanelWhite extends JPanel {
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.fillOval(0, 0, g.getClipBounds().width, g.getClipBounds().height);
+        g.setColor(Color.BLACK);
+        g.drawOval(0, 0, g.getClipBounds().width, g.getClipBounds().height);
+    }
+}
+
+class CirclePanelBlack extends JPanel {
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillOval(0, 0, g.getClipBounds().width, g.getClipBounds().height);
+        g.setColor(Color.WHITE);
+        g.drawOval(0, 0, g.getClipBounds().width, g.getClipBounds().height);
     }
 }
