@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import controller.GameManager;
+import controller.GameModeEnum;
 import controller.GameManager.GameOverEvent;
 import model.*;
 
@@ -81,7 +82,7 @@ public class Game implements State, GameManager.GameOverListener {
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
-        gameManager = new GameManager(gamePanel, gameBoard, this);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
 
         // Add cells to the game panel
         updateBoard();
@@ -187,25 +188,27 @@ public class Game implements State, GameManager.GameOverListener {
         }
 
     private void updateBoard() {
-        System.out.println("UPDATING BOARD...");
+        gameManager.NextMove();
+        // System.out.println("UPDATING BOARD...");
         
-        gamePanel.removeAll();
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
-                Piece piece = gameBoard.getPiece(row, col);
-                Cell cell = new Cell(color, piece, row, col);
-                gamePanel.add(cell);
-            }
-        }
-        ArrayList<Piece> pieces = gameManager.GetMovablePieces();
-        for (int i = 0; i < pieces.size(); i++) {
-    		//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
-			Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
-			cellToHighlight.highlightCell(true, new Color(122, 64, 121));
-    	}
-        gamePanel.revalidate();
-        gamePanel.repaint();
+        // gamePanel.removeAll();
+        // for (int row = 0; row < 8; row++) {
+        //     for (int col = 0; col < 8; col++) {
+        //         Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
+        //         Piece piece = gameBoard.getPiece(row, col);
+        //         Cell cell = new Cell(color, piece, row, col);
+        //         gamePanel.add(cell);
+        //     }
+        // }
+        // ArrayList<Piece> pieces = gameManager.GetMovablePieces();
+        // for (int i = 0; i < pieces.size(); i++) {
+    	// 	//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
+		// 	Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
+		// 	cellToHighlight.highlightCell(true, new Color(122, 64, 121));
+    	// }
+        // gamePanel.revalidate();
+        // gamePanel.repaint();
+        
     }
 
      @Override
