@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import controller.GameManager;
+import controller.GameModeEnum;
 import controller.GameManager.GameOverEvent;
 import model.*;
 
@@ -18,14 +19,11 @@ public class Game implements State, GameManager.GameOverListener {
     private GameBoard gameBoard; // Backend game board
     private GameManager gameManager;
     private JPanel gamePanel; // UI panel for the board
-    private Piece selectedPiece; // Currently selected piece
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
-    private JLabel turnLabel; // Label to display the turn
     private JLabel scoreLabel;
     private JLabel scoreLabel1;
     private int elapsedTime = 0; // Time in seconds
-    private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
    
     @Override
@@ -84,7 +82,7 @@ public class Game implements State, GameManager.GameOverListener {
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
-        gameManager = new GameManager(gamePanel, gameBoard, this);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
 
         // Add cells to the game panel
         updateBoard();
@@ -187,79 +185,30 @@ public class Game implements State, GameManager.GameOverListener {
         int[] currentScore = gameManager.calculateScore();  
         scoreLabel.setText("White Score: " + currentScore[1]);
         scoreLabel1.setText("Black Score: " + currentScore[0]);
-        // Piece piece = gameBoard.getPiece(row, col);
-
-        // if (selectedPiece == null && piece != null) {
-        //     // Select a piece and highlight moves
-        //     selectedPiece = piece;
-        //     highlightPossibleMoves();
-        // } else if (selectedPiece != null) {
-        //     // Check if clicked on a valid move
-        //     for (Cell cell : highlightedCells) {
-        //         if (cell.getXCoord() == row && cell.getYCoord() == col) {
-        //             // Check if the move is a jump (capture)
-        //             int middleRow = (selectedPiece.getRow() + row) / 2;
-        //             int middleCol = (selectedPiece.getColumn() + col) / 2;
-
-        //             if (Math.abs(selectedPiece.getRow() - row) == 2 &&
-        //                 Math.abs(selectedPiece.getColumn() - col) == 2) {
-        //                 // Remove the captured piece
-        //                 gameBoard.removePiece(middleRow, middleCol);
-        //             }
-
-        //             // Move the selected piece
-        //             gameBoard.move(selectedPiece, row, col);
-        //             selectedPiece = null; // Deselect piece
-        //             clearHighlights(); // Clear highlighted moves
-        //             updateBoard(); // Refresh UI
-        //             return;
-        //         }
-        //     }
-        //     // Deselect if invalid move
-        //     selectedPiece = null;
-            // clearHighlights();
-            //updateBoard();
         }
-
-    // private void highlightPossibleMoves() {
-    //     ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(selectedPiece, gameBoard.getBoardCopy());
-    //     for (ArrayList<int[]> path : moves) {
-    //         for (int i = 1; i < path.size(); i++) {
-    //             int[] move = path.get(i);
-    //             Cell cell = (Cell) gamePanel.getComponent(move[0] * 8 + move[1]);
-    //             cell.highlightCell(true);
-    //             highlightedCells.add(cell);
-    //         }
-    //     }
-    // }
-
-    // private void clearHighlights() {
-    //     for (Cell cell : highlightedCells) {
-    //         cell.highlightCell(false);
-    //     }
-    //     highlightedCells.clear();
-    // }
 
     private void updateBoard() {
-        System.out.println("UPDATING BOARD...");
+        gameManager.NextMove();
+        // System.out.println("UPDATING BOARD...");
         
-        gamePanel.removeAll();
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
-                Piece piece = gameBoard.getPiece(row, col);
-                Cell cell = new Cell(color, piece, row, col);
-                gamePanel.add(cell);
-            }
-        }
-        ArrayList<Piece> pieces = gameManager.GetMovablePieces();
-        for (int i = 0; i < pieces.size(); i++) {
-    		//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
-			Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
-			cellToHighlight.highlightCell(true, new Color(122, 64, 121));
-    	}
-        gamePanel.revalidate();
-        gamePanel.repaint();
+        // gamePanel.removeAll();
+        // for (int row = 0; row < 8; row++) {
+        //     for (int col = 0; col < 8; col++) {
+        //         Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
+        //         Piece piece = gameBoard.getPiece(row, col);
+        //         Cell cell = new Cell(color, piece, row, col);
+        //         gamePanel.add(cell);
+        //     }
+        // }
+        // ArrayList<Piece> pieces = gameManager.GetMovablePieces();
+        // for (int i = 0; i < pieces.size(); i++) {
+    	// 	//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
+		// 	Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
+		// 	cellToHighlight.highlightCell(true, new Color(122, 64, 121));
+    	// }
+        // gamePanel.revalidate();
+        // gamePanel.repaint();
+        
     }
 
      @Override

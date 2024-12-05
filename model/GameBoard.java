@@ -22,15 +22,7 @@ public class GameBoard {
     private void init_board()
     {
         this.board = new Piece[8][8];
-        // int row = 8, col = 8;
-        // for (int i = 0; i < row; i++)
-        // {
-        //     for (int j = 0; j < col; j++)
-        //     {
-        //         Color cell_color = ((i + j) % 2 == 0) ? Color.WHITE : Color.BLACK;
-        //         this.board[i][j] = new Cell(cell_color, i, j);
-        //     }
-        // }
+
         init_white();
         init_black();
     }
@@ -172,18 +164,6 @@ public class GameBoard {
             whitePieces.add(newPiece);
         }
     }
-
-
-    // public Cell get_cell(int row, int col)
-    // {
-    //     if (row < 0 || row > 7 || col < 0 || row > 7)
-    //     {
-    //         System.out.println("Out of index");
-    //         return null;
-    //     }
-
-    //     return this.board[row][col];
-    // }
     
     public Piece getPiece(int x, int y) {
     	return board[x][y];
@@ -207,21 +187,6 @@ public class GameBoard {
     	
     	return copy; 
     }
-    
-//    // for debugging and visualizing purposes
-//    public String toString()
-//    {
-//        String str_board = "";
-//        for (int i = 0; i < 8; i++)
-//        {
-//            for (int j = 0; j < 8; j++)
-//            {   
-//                str_board += this.board[i][j].toString() + " ";
-//            }
-//            str_board += "\n";
-//        }
-//        return str_board;
-//    }
     
     
     public String toString() {

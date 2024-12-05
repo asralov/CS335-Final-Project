@@ -1,6 +1,9 @@
 package controller;
 
+import java.util.ArrayList;
+
 import model.Color;
+import model.Piece;
 
 public class Player implements PlayerType {
 	private String name; 
@@ -29,8 +32,8 @@ public class Player implements PlayerType {
 		return this.name;
 	}
 
-	public void make_a_move()
+	public ArrayList<int[]> make_a_move(ArrayList<Piece> movablePieces, Piece[][] board)
 	{
-
+		return null;
 	}
 }
