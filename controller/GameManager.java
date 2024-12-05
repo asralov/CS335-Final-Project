@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.Random;
 
 import java.util.HashSet;
@@ -18,9 +19,16 @@ public class GameManager
 {
 	private JPanel gamePanel;
 	private GameBoard board;
-	public GameManager(JPanel panel, GameBoard gameBoard) {
+	private final GameOverListener gameOverListener;
+	public GameManager(JPanel panel, GameBoard gameBoard, GameOverListener listener) {
 		this.gamePanel = panel;
 		this.board = gameBoard;
+		this.gameOverListener = listener;
+
+		this.board = new GameBoard();
+        // this.move = new Move();
+        this.move_count = 0;
+        this.gameState = GameStateEnum.Unselected;
 	}
     private int move_count;
     private Player p1;
@@ -31,13 +39,15 @@ public class GameManager
     private Piece selectedPiece = null;
 	private java.util.List<Cell> highlightedCells = new ArrayList<>(); // Highlighted cells
 
-    public GameManager()
-    {
-        this.board = new GameBoard();
-        // this.move = new Move();
-        this.move_count = 0;
-        this.gameState = GameStateEnum.Unselected;
-    }
+	private boolean hasToTake = false;
+	private int moveCountUntilDraw = 40;
+
+	
+
+    // public GameManager()
+    // {
+        
+    // }
     
     public void OnPieceClick(int x, int y) {
 		ResetHighlights();
@@ -69,8 +79,9 @@ public class GameManager
     	// click on cell
     	else {
     		// if clicked on cell while unselected the do nothing
-			System.out.println(this.gameState);
+			// System.out.println(this.gameState);
     		if (gameState.equals(GameStateEnum.Unselected)) return;
+			
     		ArrayList<ArrayList<int[]>> possiblePaths = Move.getPossibleMoves(selectedPiece, board.getBoardCopy());
 			System.out.println("POSSIBLE PATHS: " + possiblePaths);
             HashSet<int[]> possibleMoves = new HashSet<>();
@@ -90,6 +101,7 @@ public class GameManager
             }
 
             if (isValidMove) {
+				moveCountUntilDraw--;
             	//System.out.println("Valid");
             	for (ArrayList<int[]> path : possiblePaths) {
             		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
@@ -99,30 +111,30 @@ public class GameManager
             		}
             	}
             	
-				// INCOMPLETE CODE FOR CHECKING MULTIPLE JUMPS
-				// boolean canJumpAgain = false;
-                // this.selectedPiece = board.getPiece(x, y);
-				// if (this.selectedPiece != null) {
-				// 	for (ArrayList<int[]> path: Move.getPossibleMoves(clickedPiece, board.getBoardCopy())) {
-				// 		if (path.size() > 2) {
-				// 			canJumpAgain = true;
-				// 		}
-				// 	}
-				// }
+				// CHECKS IF A PIECE CAN JUMP AGAIN AFTER MOVING
+				boolean canJumpAgain = false;
+                this.selectedPiece = board.getPiece(x, y);
+				if (this.selectedPiece != null) {
+					for (ArrayList<int[]> path: Move.getPossibleMoves(selectedPiece, board.getBoardCopy())) {
+						if (path.size() > 2) {
+							canJumpAgain = true;
+						}
+					}
+				}
             	
-				// if (canJumpAgain) {
-				// 	ResetHighlights();
-				// 	HighLightCell();
+				if (canJumpAgain && hasToTake) {
+					ResetHighlights();
+					HighLightCell();
 
-				// 	Cell cellToHighlight = (Cell) gamePanel.getComponent(this.selectedPiece.getRow() * 8 + this.selectedPiece.getColumn());
-				// 	cellToHighlight.highlightCell(true);
+					Cell cellToHighlight = (Cell) gamePanel.getComponent(this.selectedPiece.getRow() * 8 + this.selectedPiece.getColumn());
+					cellToHighlight.highlightCell(true);
 					
-				// } else {
-					
-				// }
-                this.selectedPiece = null;
-                this.gameState = GameStateEnum.Unselected;
-                NextMove();
+				} else {
+					this.selectedPiece = null;
+                	this.gameState = GameStateEnum.Unselected;
+					NextMove();
+				}
+                
             } else {
             	//System.out.println("Invalid");
                 // Revert state
@@ -157,6 +169,7 @@ public class GameManager
 	}
     
     public void NextMove() {
+		CheckGameOver();
 		ResetHighlights();
     	move_count++;
     	ArrayList<Piece> pieces = GetMovablePieces();
@@ -165,8 +178,9 @@ public class GameManager
     	for (int i = 0; i < pieces.size(); i++) {
     		//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
 			Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
-			cellToHighlight.highlightCell(true);
+			cellToHighlight.highlightCell(true, new Color(122, 64, 121));
     	}
+		hasToTake = false;
     }
     
     public void ResetHighlights() {
@@ -189,6 +203,7 @@ public class GameManager
     		if (paths.size() != 0 ) {
 				for (ArrayList<int[]> path: paths) {
 					if (path.size() > 2) {
+						moveCountUntilDraw = 40;
 						takeables.add(pieces.get(i));
 					}
 				}
@@ -201,6 +216,7 @@ public class GameManager
 			for (int i = 0; i < takeables.size(); i++) {
 				System.out.println(takeables.get(i));
 			}
+			hasToTake = true;
 			return takeables;
 		}
     	return out;
@@ -231,6 +247,27 @@ public class GameManager
             }
         }
         return longestPath;
+    }
+
+	public void CheckGameOver() {
+        if (moveCountUntilDraw <= 0) {
+            FireGameOverEvent("DRAW!");
+        } else if (board.getBlackPieces() == 0) {
+            FireGameOverEvent("WHITE WON!");
+        } else if (board.getWhitePieces() == 0) {
+            FireGameOverEvent("BLACK WON!");
+        }
+    }
+
+	private void FireGameOverEvent(String winner) {
+        if (gameOverListener != null) {
+            gameOverListener.GameOverOccurred(new GameOverEvent(this, winner));
+        }
+    }
+
+    //Define the listener interface
+    public interface GameOverListener extends java.util.EventListener {
+        void GameOverOccurred(GameOverEvent event);
     }
     
     public int[] calculateScore() {
@@ -288,6 +325,19 @@ public class GameManager
 	    return output;
     	
     }
+
+	public class GameOverEvent extends EventObject {
+    private final String winner;
+
+    public GameOverEvent(Object source, String winner) {
+        super(source);
+        this.winner = winner;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+}
     
     
     

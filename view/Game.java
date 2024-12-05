@@ -4,13 +4,17 @@ import java.awt.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.*;
 
 import controller.GameManager;
+import controller.GameManager.GameOverEvent;
 import model.*;
 
-public class Game implements State {
+
+public class Game implements State, GameManager.GameOverListener {
     private GameBoard gameBoard; // Backend game board
     private GameManager gameManager;
     private JPanel gamePanel; // UI panel for the board
@@ -69,7 +73,7 @@ public class Game implements State {
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
-        gameManager = new GameManager(gamePanel, gameBoard);
+        gameManager = new GameManager(gamePanel, gameBoard, this);
 
         // Add cells to the game panel
         updateBoard();
@@ -150,27 +154,28 @@ public class Game implements State {
             //updateBoard();
         }
 
-    private void highlightPossibleMoves() {
-        ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(selectedPiece, gameBoard.getBoardCopy());
-        for (ArrayList<int[]> path : moves) {
-            for (int i = 1; i < path.size(); i++) {
-                int[] move = path.get(i);
-                Cell cell = (Cell) gamePanel.getComponent(move[0] * 8 + move[1]);
-                cell.highlightCell(true);
-                highlightedCells.add(cell);
-            }
-        }
-    }
+    // private void highlightPossibleMoves() {
+    //     ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(selectedPiece, gameBoard.getBoardCopy());
+    //     for (ArrayList<int[]> path : moves) {
+    //         for (int i = 1; i < path.size(); i++) {
+    //             int[] move = path.get(i);
+    //             Cell cell = (Cell) gamePanel.getComponent(move[0] * 8 + move[1]);
+    //             cell.highlightCell(true);
+    //             highlightedCells.add(cell);
+    //         }
+    //     }
+    // }
 
-    private void clearHighlights() {
-        for (Cell cell : highlightedCells) {
-            cell.highlightCell(false);
-        }
-        highlightedCells.clear();
-    }
+    // private void clearHighlights() {
+    //     for (Cell cell : highlightedCells) {
+    //         cell.highlightCell(false);
+    //     }
+    //     highlightedCells.clear();
+    // }
 
     private void updateBoard() {
         System.out.println("UPDATING BOARD...");
+        
         gamePanel.removeAll();
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -180,8 +185,59 @@ public class Game implements State {
                 gamePanel.add(cell);
             }
         }
+        ArrayList<Piece> pieces = gameManager.GetMovablePieces();
+        for (int i = 0; i < pieces.size(); i++) {
+    		//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
+			Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
+			cellToHighlight.highlightCell(true, new Color(122, 64, 121));
+    	}
         gamePanel.revalidate();
         gamePanel.repaint();
+    }
+
+     @Override
+    public void GameOverOccurred(GameOverEvent event) {
+        String winner = event.getWinner();
+        showGameOverDialog(winner);
+    }
+
+    private void showGameOverDialog(String winner) {
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Game Over!");
+        // dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        // dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        dialog.setLayout(new BorderLayout());
+
+
+        JLabel messageLabel = new JLabel(winner, JLabel.CENTER);
+        JButton mainMenuButton = new JButton("Main Menu");
+        mainMenuButton.addActionListener(e -> GoToMenu(dialog) );
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(mainMenuButton);
+
+        dialog.add(messageLabel, BorderLayout.CENTER);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(Checkers.window);
+        dialog.setVisible(true);
+
+        dialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                GoToMenu((JDialog) e.getSource()); //Get the dialog from the event
+            }
+        });
+    }
+
+    public void GoToMenu(JDialog dialog) {
+        Checkers.game_state = new Menu();
+        Checkers.game_state.setup(Checkers.window);
+        Checkers.window.setVisible(true);
+        dialog.dispose();
+
     }
 
     /**

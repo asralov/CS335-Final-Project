@@ -68,6 +68,7 @@ public class GameBoard {
     	int whitePiece = 0 ; 
     	for (int i = 0; i < 8; i++) {
     		for (int j = 0; j < 8; j++) {
+				if (board[i][j] == null) continue;
     			if (board[i][j].getColor().equals(Color.WHITE)) {
     				whitePiece ++;
     			}
@@ -81,6 +82,7 @@ public class GameBoard {
     	int blackPiece = 0 ; 
     	for (int i = 0; i < 8; i++) {
     		for (int j = 0; j < 8; j++) {
+				if (board[i][j] == null) continue;
     			if (board[i][j].getColor().equals(Color.BLACK)) {
     				blackPiece ++;
     			}
@@ -125,6 +127,7 @@ public class GameBoard {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
     
+
     public void move(ArrayList<int[]> path, Color pieceColor, boolean isKing) {
         // Remove captured pieces along the path
     	
