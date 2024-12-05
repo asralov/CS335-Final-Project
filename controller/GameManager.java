@@ -19,16 +19,13 @@ public class GameManager
 {
 	private JPanel gamePanel;
 	private GameBoard board;
-	private final GameOverListener gameOverListener;
+	private GameOverListener gameOverListener;
 	public GameManager(JPanel panel, GameBoard gameBoard, GameOverListener listener) {
 		this.gamePanel = panel;
 		this.board = gameBoard;
 		this.gameOverListener = listener;
 
-		this.board = new GameBoard();
-        // this.move = new Move();
-        this.move_count = 0;
-        this.gameState = GameStateEnum.Unselected;
+		
 	}
     private int move_count;
     private Player p1;
@@ -44,10 +41,13 @@ public class GameManager
 
 	
 
-    // public GameManager()
-    // {
-        
-    // }
+    public GameManager()
+    {
+        this.board = new GameBoard();
+        // this.move = new Move();
+        this.move_count = 0;
+        this.gameState = GameStateEnum.Unselected;
+    }
     
     public void OnPieceClick(int x, int y) {
 		ResetHighlights();
@@ -169,7 +169,6 @@ public class GameManager
 	}
     
     public void NextMove() {
-		CheckGameOver();
 		ResetHighlights();
     	move_count++;
     	ArrayList<Piece> pieces = GetMovablePieces();
@@ -181,6 +180,7 @@ public class GameManager
 			cellToHighlight.highlightCell(true, new Color(122, 64, 121));
     	}
 		hasToTake = false;
+		CheckGameOver();
     }
     
     public void ResetHighlights() {
@@ -256,7 +256,13 @@ public class GameManager
             FireGameOverEvent("WHITE WON!");
         } else if (board.getWhitePieces() == 0) {
             FireGameOverEvent("BLACK WON!");
-        }
+        } else if (GetMovablePieces().size() == 0) {
+			if (move_count % 2 == 0) {
+				FireGameOverEvent("BLACK WON!");
+			} else {
+				FireGameOverEvent("WHITE WON!");
+			}
+		}
     }
 
 	private void FireGameOverEvent(String winner) {
@@ -271,22 +277,8 @@ public class GameManager
     }
     
     public int[] calculateScore() {
-        int whiteCount = 0;
-        int blackCount = 0;
-
-        Piece[][] boardArray = board.getBoard();
-        for (int row = 0; row < boardArray.length; row++) {
-            for (int col = 0; col < boardArray[row].length; col++) {
-                Piece piece = boardArray[row][col];
-                if (piece != null) {
-                    if (piece.getColor() == model.Color.WHITE) {
-                        whiteCount++;
-                    } else if (piece.getColor() == model.Color.BLACK) {
-                        blackCount++;
-                    }
-                }
-            }
-        }
+        int whiteCount = board.getWhitePieces();
+        int blackCount = board.getBlackPieces();
 
         int whiteScore = 12 - whiteCount;  
         int blackScore = 12 - blackCount;  

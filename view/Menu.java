@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class Menu implements State {
+    private String mode;
     @Override
     public void setup(JFrame window) {
         // creating the base panel with BorderLayout
@@ -82,16 +83,18 @@ public class Menu implements State {
         
         // setting the initial icon for the mode button
         modeButton.setIcon(p_vs_p);     
-       
- 
+        mode = "PvP";
+        
           
         // mode button action listener to toggle images
         modeButton.addActionListener(e -> {
             // checking current icon and toggle
             if (modeButton.getIcon() == p_vs_p) {
                 modeButton.setIcon(p_vs_c);
+                mode = "PvC";
             } else {
                 modeButton.setIcon(p_vs_p);
+                mode = "PvP";
             }
         });
         
@@ -110,6 +113,7 @@ public class Menu implements State {
     {
         Checkers.game_state = new Game();
         Checkers.game_state.setup(Checkers.window);
+        Checkers.mode = mode;
     }
 
     
