@@ -86,8 +86,18 @@ public class Cell extends JButton{
 
 
     public void highlightCell(boolean highlight) {
+        System.out.println("HIGHLIGHTING CELL: " + this.x + " " + this.y);
         if (highlight) {
-            this.setBackground(Color.RED); 
+            this.setBackground(new Color(168, 66, 167)); 
+        } else {
+            this.setBackground((x + y) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40));
+        }
+    }
+
+    public void highlightCell(boolean highlight, Color color) {
+        System.out.println("HIGHLIGHTING CELL: " + this.x + " " + this.y);
+        if (highlight) {
+            this.setBackground(color); 
         } else {
             this.setBackground((x + y) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40));
         }
