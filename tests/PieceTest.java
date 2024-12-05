@@ -23,11 +23,6 @@ public class PieceTest {
 		assertTrue(newPiece.isKing());
 	}
 
-//	@Test
-//	public void TestValidMove() {
-//		assertTrue()
-//	}
-	
 	@Test
 	public void ToString() {
 		System.out.println(newPiece);
