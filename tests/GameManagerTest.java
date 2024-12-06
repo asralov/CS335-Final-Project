@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import controller.*;
 
 import org.junit.jupiter.api.Test;
+import view.*;
 
 class GameManagerTest {
 	
@@ -16,7 +17,7 @@ class GameManagerTest {
 	
 	@Test
 	public void testOnPieceClick_ValidPiece() {
-	    gameManager.OnPieceClick(0, 3); // Assuming this is a valid piece
+	    gameManager.OnPieceClick(2, 1); // Assuming this is a valid piece
 	    System.out.println(gameManager);
 	    assertEquals(GameStateEnum.Selected, gameManager.getState());
 	}
