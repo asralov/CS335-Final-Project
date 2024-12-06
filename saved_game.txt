@@ -3,6 +3,37 @@
     "board": [
       [null, {"color": "WHITE", "king": false, "row": 0, "col": 1}, null, {"color": "WHITE", "king": false, "row": 0, "col": 3}, null, {"color": "WHITE", "king": false, "row": 0, "col": 5}, null, {"color": "WHITE", "king": false, "row": 0, "col": 7}],
       [{"color": "WHITE", "king": false, "row": 1, "col": 0}, null, {"color": "WHITE", "king": false, "row": 1, "col": 2}, null, {"color": "WHITE", "king": false, "row": 1, "col": 4}, null, {"color": "WHITE", "king": false, "row": 1, "col": 6}, null],
+<<<<<<< HEAD
+      [null, {"color": "WHITE", "king": false, "row": 2, "col": 1}, null, null, null, {"color": "BLACK", "king": false, "row": 2, "col": 5}, null, {"color": "WHITE", "king": false, "row": 2, "col": 7}],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [{"color": "BLACK", "king": false, "row": 5, "col": 0}, null, {"color": "BLACK", "king": false, "row": 5, "col": 2}, null, null, null, {"color": "BLACK", "king": false, "row": 5, "col": 6}, null],
+      [null, {"color": "BLACK", "king": false, "row": 6, "col": 1}, null, {"color": "BLACK", "king": false, "row": 6, "col": 3}, null, null, null, {"color": "BLACK", "king": false, "row": 6, "col": 7}],
+      [{"color": "BLACK", "king": false, "row": 7, "col": 0}, null, {"color": "BLACK", "king": false, "row": 7, "col": 2}, null, {"color": "BLACK", "king": false, "row": 7, "col": 4}, null, {"color": "BLACK", "king": false, "row": 7, "col": 6}, null]
+    ],
+    "turn": "WHITE",
+    "history": [
+      "OLD LOCATION: Piece [WHITE] at (2, 3)",
+      "NEW LOCATION: Piece [WHITE] at (3, 2)",
+      "",
+      "OLD LOCATION: Piece [BLACK] at (5, 4)",
+      "NEW LOCATION: Piece [BLACK] at (4, 3)",
+      "",
+      "OLD LOCATION: Piece [WHITE] at (3, 2)",
+      "NEW LOCATION: Piece [WHITE] at (5, 4)",
+      "	EATEN PIECE: Piece [BLACK] at (4, 3)",
+      "",
+      "OLD LOCATION: Piece [BLACK] at (6, 5)",
+      "NEW LOCATION: Piece [BLACK] at (4, 3)",
+      "	EATEN PIECE: Piece [WHITE] at (5, 4)",
+      "",
+      "OLD LOCATION: Piece [WHITE] at (2, 5)",
+      "NEW LOCATION: Piece [WHITE] at (3, 4)",
+      "",
+      "OLD LOCATION: Piece [BLACK] at (4, 3)",
+      "NEW LOCATION: Piece [BLACK] at (2, 5)",
+      "	EATEN PIECE: Piece [WHITE] at (3, 4)"
+=======
       [null, {"color": "WHITE", "king": false, "row": 2, "col": 1}, null, null, null, {"color": "WHITE", "king": false, "row": 2, "col": 5}, null, {"color": "WHITE", "king": false, "row": 2, "col": 7}],
       [null, null, null, null, null, null, null, null],
       [null, null, null, {"color": "BLACK", "king": false, "row": 4, "col": 3}, null, null, null, null],
@@ -24,6 +55,7 @@
       "",
       "OLD LOCATION: Piece [BLACK] at (5, 2)",
       "NEW LOCATION: Piece [BLACK] at (4, 3)"
+>>>>>>> origin/main
     ]
   }
 }

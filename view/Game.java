@@ -236,6 +236,12 @@ public class Game implements State, GameManager.GameOverListener {
         }
 
         gameManager = new GameManager(gamePanel, gameBoard, this, Checkers.mode);
+        int[] currentScore = gameManager.calculateScore();  
+
+        String blackScore = "x" + currentScore[0];
+        String whiteScore = "x" + currentScore[1];
+        capturedPiecesLabelWhite.setText(whiteScore);
+        capturedPiecesLabelBlack.setText(blackScore);
 
         curr = new JLabel();
         String curr_turn = "Current Turn: ";
