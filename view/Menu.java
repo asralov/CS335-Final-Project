@@ -1,6 +1,9 @@
 package view;
 
 import javax.swing.*;
+
+import controller.GameModeEnum;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,6 +11,7 @@ import java.io.File;
 
 public class Menu implements State {
     private String mode;
+    private GameModeEnum gameMode;
     @Override
     public void setup(JFrame window) {
         // creating the base panel with BorderLayout
@@ -60,11 +64,43 @@ public class Menu implements State {
         
         playButton.addActionListener(e -> 
         {
+            JDialog mode_promt = new JDialog();
+            mode_promt.setLocationRelativeTo(Checkers.window);
+            mode_promt.setSize(new Dimension(300, 200));
+            mode_promt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            
+            JLabel modeString = new JLabel("Please Choose The Mode");
+            
+
+            JButton playerVsPlayer = new JButton("Player VS Player");
+            JButton playerVsComputer = new JButton("Player Vs Computer");
+
+            styleButton(playerVsPlayer);
+            styleButton(playerVsComputer);
+
+            Dimension d = new Dimension(400, 100);
+            playerVsComputer.setPreferredSize(d);
+            playerVsComputer.setMinimumSize(d);
+            playerVsComputer.setMaximumSize(d);
+
+            playerVsPlayer.setPreferredSize(d);
+            playerVsPlayer.setMinimumSize(d);
+            playerVsPlayer.setMaximumSize(d);
+
+            playerVsPlayer.addActionListener(event-> pvp());
+            playerVsComputer.addActionListener(event -> pvc());
+
+            mode_promt.add(modeString);
+            mode_promt.add(playerVsPlayer);
+            mode_promt.add(playerVsComputer);
+
+            mode_promt.setVisible(true);
+
         	Game newGame = new Game(); 
         	Checkers.game_state = newGame; 
-        	newGame.setup(Checkers.window);
-        }
-        		);
+        	newGame.setup(Checkers.window, this.gameMode);
+        });
+
         contButton.addActionListener(e -> {
             Game loadedGame = new Game();
             Checkers.game_state = loadedGame;
@@ -91,6 +127,14 @@ public class Menu implements State {
         Checkers.mode = mode;
     }
 
+    private void pvc() {
+        this.gameMode = GameModeEnum.PvC;
+    }
+
+    private void pvp()
+    {
+        this.gameMode = GameModeEnum.PvP;
+    }
     
 
     public static void styleButton(JButton button) {
@@ -136,4 +180,11 @@ public class Menu implements State {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+    @Override
+    public void setup(JFrame window, GameModeEnum gameMode) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setup'");
+    }
 }

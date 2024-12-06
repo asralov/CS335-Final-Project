@@ -204,9 +204,14 @@ public class GameManager {
 		PlayerType currentPlayer;
 		if (currentTurn.equals(p1.getColor())) {
 			currentPlayer = p1;
+			Game.curr.setText("Current Turn: " + p1.getName());
 		} else {
 			currentPlayer = p2;
+			Game.curr.setText("Current Turn: " + p2.getName());
 		}
+		Game.curr.revalidate();
+		Game.curr.repaint();
+
 
 		if (currentPlayer instanceof Computer) {
 			ResetHighlights();
@@ -354,6 +359,16 @@ public class GameManager {
 		return new int[] { whiteScore, blackScore };
 	}
 
+	public String p1name()
+	{
+		return this.p1.getName();
+	}
+
+	public String p2name()
+	{
+		return this.p2.getName();
+	}
+
 	public String toString() {
 		System.out.println("String: " + selectedPiece);
 		Piece[][] newBoard = board.getBoard();
@@ -409,6 +424,8 @@ public class GameManager {
 			return pieces;
 		}
 	}
+
+
     
     
     
