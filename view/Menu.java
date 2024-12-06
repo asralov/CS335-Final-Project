@@ -61,7 +61,52 @@ public class Menu implements State {
         // adding the grid panel to the center of the base panel
         basePanel.add(gridPanel, BorderLayout.WEST);
        
- 
+        
+//        playButton.addActionListener(e -> 
+//        {
+//            JDialog mode_promt = new JDialog();
+//            mode_promt.setLocationRelativeTo(Checkers.window);
+//            mode_promt.setSize(new Dimension(300, 200));
+//            mode_promt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//            
+//            JLabel modeString = new JLabel("Please Choose The Mode");
+//            
+//
+//            JButton playerVsPlayer = new JButton("Player VS Player");
+//            JButton playerVsComputer = new JButton("Player Vs Computer");
+//
+//            styleButton(playerVsPlayer);
+//            styleButton(playerVsComputer);
+//
+//            Dimension d = new Dimension(400, 100);
+//            playerVsComputer.setPreferredSize(d);
+//            playerVsComputer.setMinimumSize(d);
+//            playerVsComputer.setMaximumSize(d);
+//
+//            playerVsPlayer.setPreferredSize(d);
+//            playerVsPlayer.setMinimumSize(d);
+//            playerVsPlayer.setMaximumSize(d);
+//
+//            playerVsPlayer.addActionListener(event-> pvp());
+//            playerVsComputer.addActionListener(event -> pvc());
+//
+//            mode_promt.add(modeString);
+//            mode_promt.add(playerVsPlayer);
+//            mode_promt.add(playerVsComputer);
+//
+//            mode_promt.setVisible(true);
+//
+//        	Game newGame = new Game(); 
+//        	Checkers.game_state = newGame; 
+//        	newGame.setup(Checkers.window, this.gameMode);
+//        });
+//
+//        contButton.addActionListener(e -> {
+//            Game loadedGame = new Game();
+//            Checkers.game_state = loadedGame;
+//            loadedGame.loadGameState("saved_game.txt");
+//            loadedGame.setupLoaded(Checkers.window);
+//        });
         playButton.addActionListener(e -> {
             JDialog modePromt = new JDialog(Checkers.window, "Select Game Mode", true); // Make the dialog modal
             modePromt.setLocationRelativeTo(Checkers.window);
@@ -98,6 +143,13 @@ public class Menu implements State {
             Game newGame = new Game();
             Checkers.game_state = newGame;
             newGame.setup(Checkers.window, this.gameMode);
+        });
+        
+        contButton.addActionListener(e -> {
+            Game loadedGame = new Game();
+            Checkers.game_state = loadedGame;
+            loadedGame.loadGameState("saved_game.txt");
+            loadedGame.setupLoaded(Checkers.window);
         });
 
 
