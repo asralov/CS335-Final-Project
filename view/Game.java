@@ -188,8 +188,25 @@ public class Game implements State, GameManager.GameOverListener {
     private void initializeNewGame() {
         gameBoard = new GameBoard();
         gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+        moveHistory.clear(); // Clear any existing history for a new game
+        updateMoveHistory(); // Reset the UI for move history
+
+        try {
+            moveHistoryFile = new File("move_history.txt");
+            if (!moveHistoryFile.exists()) {
+                moveHistoryFile.createNewFile();
+            } else {
+                // Clear the file contents for a new game
+                new PrintWriter(moveHistoryFile).close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to initialize moveHistoryFile.");
+        }
+
         updateBoard();
     }
+
 
     private void initializeLoadedGame() {
         if (gameBoard == null) {
@@ -503,41 +520,47 @@ public class Game implements State, GameManager.GameOverListener {
 
   // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE.
      public void GetMovedPieces(GetMovedPieces event) {
-         ArrayList<Piece> pieces = event.getPieces();
-         MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
-         moveHistory.add(move);
+    	    ArrayList<Piece> pieces = event.getPieces();
+    	    MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
+    	    moveHistory.add(move);
 
-         // Append the new move to the history area instead of replacing it
-         if (moveHistoryArea != null) {
-             String currentText = moveHistoryArea.getText(); // Get existing text
-             moveHistoryArea.setText(currentText + move.toString() + "\n"); // Append new move
-             moveHistoryScrollPane.getVerticalScrollBar().setValue(
-                 moveHistoryScrollPane.getVerticalScrollBar().getMaximum()
-             );
-         } else {
-             System.err.println("moveHistoryArea is not initialized.");
-         }
+    	    // Append the new move to the history area instead of replacing it
+    	    if (moveHistoryArea != null) {
+    	        String currentText = moveHistoryArea.getText(); // Get existing text
+    	        moveHistoryArea.setText(currentText + move.toString() + "\n"); // Append new move
+    	        moveHistoryScrollPane.getVerticalScrollBar().setValue(
+    	            moveHistoryScrollPane.getVerticalScrollBar().getMaximum()
+    	        );
+    	    } else {
+    	        System.err.println("moveHistoryArea is not initialized.");
+    	    }
 
-         // Save the move to the file
-         try (FileWriter fw = new FileWriter(moveHistoryFile, true);
-              BufferedWriter bw = new BufferedWriter(fw);
-              PrintWriter out = new PrintWriter(bw)) {
-             out.println(move);
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-     }
+    	    // Save the move to the file
+    	    if (moveHistoryFile != null) {
+    	        try (FileWriter fw = new FileWriter(moveHistoryFile, true);
+    	             BufferedWriter bw = new BufferedWriter(fw);
+    	             PrintWriter out = new PrintWriter(bw)) {
+    	            out.println(move);
+    	        } catch (IOException e) {
+    	            e.printStackTrace();
+    	        }
+    	    } else {
+    	        System.err.println("moveHistoryFile is not initialized.");
+    	    }
+    	}
+
 
 
     //Updates the move history text area and scrolls to the bottom
-    private void updateMoveHistory() {
-        StringBuilder historyText = new StringBuilder();
-        for (MoveData move : moveHistory) {
-            historyText.append(move.toString()).append("\n");
-        }
-        moveHistoryArea.setText(historyText.toString());
-        moveHistoryScrollPane.getVerticalScrollBar().setValue(moveHistoryScrollPane.getVerticalScrollBar().getMaximum());
-    }
+     private void updateMoveHistory() {
+    	    StringBuilder historyText = new StringBuilder();
+    	    for (MoveData move : moveHistory) {
+    	        historyText.append(move.toString()).append("\n");
+    	    }
+    	    moveHistoryArea.setText(historyText.toString());
+    	    moveHistoryScrollPane.getVerticalScrollBar().setValue(moveHistoryScrollPane.getVerticalScrollBar().getMaximum());
+    	}
+
 
     private void showGameOverDialog(String winner) {
         JDialog dialog = new JDialog();
