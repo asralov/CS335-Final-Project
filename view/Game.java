@@ -15,13 +15,11 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import javax.swing.*;
-
 import controller.GameManager;
 import controller.GameModeEnum;
 import controller.GameManager.GameOverEvent;
 import controller.GameManager.GetMovedPieces;
 import model.*;
-
 
 public class Game implements State, GameManager.GameOverListener {
     private GameBoard gameBoard; // Backend game board
@@ -29,22 +27,16 @@ public class Game implements State, GameManager.GameOverListener {
     private JPanel gamePanel; // UI panel for the board
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
-    
     private JLabel capturedPiecesLabelWhite;
     private JLabel capturedPiecesLabelBlack;
     private JPanel timerPanel;
-
-
     private ArrayList<MoveData> moveHistory = new ArrayList<>();
     private JTextArea moveHistoryArea;
     private JScrollPane moveHistoryScrollPane;
     private JPanel moveHistoryPanel;
 	private File moveHistoryFile; //Added this line
-
     private model.Color turn; 
-    
     private int elapsedTime = 0; // Time in seconds
-    private boolean gameLoaded = false; 
     public static JLabel curr;
    
     @Override
@@ -127,10 +119,7 @@ public class Game implements State, GameManager.GameOverListener {
             piecePanelBlack.add(capturedPiecesLabelBlack);
 
             // Add black piece panel to timer panel
-            timerPanel.add(piecePanelBlack);
-
-            // 
-            
+            timerPanel.add(piecePanelBlack);            
         }
 
         // Wrapper panel for the game board
@@ -152,10 +141,6 @@ public class Game implements State, GameManager.GameOverListener {
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
-        // mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
-
-
-        //HISTOGRAM PANEL
 
         // HISTOGRAM PANEL
         moveHistoryArea = new JTextArea();
@@ -398,18 +383,12 @@ public class Game implements State, GameManager.GameOverListener {
             } else {
                 System.err.println("moveHistoryArea is not initialized.");
             }
-
-            gameLoaded = true;
             System.out.println("Game loaded successfully from " + filename);
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Failed to load game.");
         }
     }
-
-
-
-
 
 
     private void Does_User_Want() {
@@ -627,8 +606,6 @@ public class Game implements State, GameManager.GameOverListener {
     	    }
     	}
 
-
-
     //Updates the move history text area and scrolls to the bottom
      private void updateMoveHistory() {
     	    StringBuilder historyText = new StringBuilder();
@@ -694,7 +671,6 @@ public class Game implements State, GameManager.GameOverListener {
 
     @Override
     public void setup(JFrame window) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 }
