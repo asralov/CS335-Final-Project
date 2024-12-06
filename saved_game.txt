@@ -1,0 +1,15 @@
+{
+  "gameState": {
+    "board": [
+      [null, {"color": "WHITE", "king": false, "row": 0, "col": 1}, null, {"color": "WHITE", "king": false, "row": 0, "col": 3}, null, {"color": "WHITE", "king": false, "row": 0, "col": 5}, null, {"color": "WHITE", "king": false, "row": 0, "col": 7}],
+      [null, null, null, null, null, null, null, null],
+      [null, {"color": "WHITE", "king": false, "row": 2, "col": 1}, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, {"color": "BLACK", "king": false, "row": 4, "col": 7}],
+      [{"color": "WHITE", "king": false, "row": 5, "col": 0}, null, null, null, null, null, null, null],
+      [null, {"color": "WHITE", "king": true, "row": 6, "col": 1}, null, null, null, null, null, {"color": "BLACK", "king": false, "row": 6, "col": 7}],
+      [null, null, null, null, {"color": "WHITE", "king": true, "row": 7, "col": 4}, null, null, null]
+    ],
+    "turn": "BLACK"
+  }
+}

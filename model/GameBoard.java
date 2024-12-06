@@ -193,6 +193,27 @@ public class GameBoard {
     	return copy; 
     }
     
+    public void setBoard(Piece[][] newBoard) {
+        this.board = newBoard;
+
+        // Rebuild the white and black piece lists
+        whitePieces.clear();
+        blackPieces.clear();
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] != null) {
+                    Piece piece = board[i][j];
+                    if (piece.getColor() == Color.WHITE) {
+                        whitePieces.add(piece);
+                    } else {
+                        blackPieces.add(piece);
+                    }
+                }
+            }
+        }
+    }
+
     
     public String toString() {
     	String output = "   0 1 2 3 4 5 6 7\n   ----------------\n";
