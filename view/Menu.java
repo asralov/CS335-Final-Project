@@ -167,7 +167,7 @@ public class Menu implements State {
                 Checkers.game_state = loadedGame;
 
                 // Load the saved game state
-                loadedGame.loadGameState("saved_game.txt");
+                //loadedGame.loadGameState("saved_game.txt");
                 loadedGame.setupLoaded(Checkers.window);
 
                 System.out.println("Loaded Game Mode: " + gameMode);

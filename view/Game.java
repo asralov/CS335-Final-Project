@@ -313,9 +313,7 @@ public class Game implements State, GameManager.GameOverListener {
                     String[] cells = line.replace("[", "").replace("]", "").split("},");
                     for (int colIndex = 0; colIndex < cells.length && colIndex < 8; colIndex++) {
                         String cell = cells[colIndex].trim();
-                        if (cell.equals("null")) {
-                            board[board.length - 1][colIndex] = null;
-                        } else {
+                        
                             cell = cell.replace("{", "").replace("}", "").trim();
                             String[] attributes = cell.split(",");
                             String color = "";
@@ -366,7 +364,7 @@ public class Game implements State, GameManager.GameOverListener {
                                 System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
                             }
                             
-                        }
+                        
                         
                     }
                 }

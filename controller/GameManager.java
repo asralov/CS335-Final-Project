@@ -256,7 +256,7 @@ public class GameManager {
 		
 	}
 
-	private void SwitchCurrentTurn() {
+	public void SwitchCurrentTurn() {
 		// if (move_count == 1) return;
 		if (currentTurn.equals(model.Color.BLACK)) {
 			currentTurn = model.Color.WHITE;

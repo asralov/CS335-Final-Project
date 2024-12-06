@@ -1,3 +1,43 @@
+OLD LOCATION: Piece [WHITE] at (2, 5)
+NEW LOCATION: Piece [WHITE] at (3, 4)
+
+OLD LOCATION: Piece [BLACK] at (5, 0)
+NEW LOCATION: Piece [BLACK] at (4, 1)
+
+OLD LOCATION: Piece [WHITE] at (3, 4)
+NEW LOCATION: Piece [WHITE] at (4, 3)
+
+OLD LOCATION: Piece [BLACK] at (5, 2)
+NEW LOCATION: Piece [BLACK] at (3, 4)
+	EATEN PIECE: Piece [WHITE] at (4, 3)
+
+OLD LOCATION: Piece [WHITE] at (2, 3)
+NEW LOCATION: Piece [WHITE] at (4, 5)
+	EATEN PIECE: Piece [BLACK] at (3, 4)
+
+OLD LOCATION: Piece [BLACK] at (5, 4)
+NEW LOCATION: Piece [BLACK] at (3, 6)
+	EATEN PIECE: Piece [WHITE] at (4, 5)
+
+OLD LOCATION: Piece [WHITE] at (2, 7)
+NEW LOCATION: Piece [WHITE] at (4, 5)
+	EATEN PIECE: Piece [BLACK] at (3, 6)
+
+OLD LOCATION: Piece [BLACK] at (5, 6)
+NEW LOCATION: Piece [BLACK] at (3, 4)
+	EATEN PIECE: Piece [WHITE] at (4, 5)
+
 OLD LOCATION: Piece [WHITE] at (2, 1)
 NEW LOCATION: Piece [WHITE] at (3, 2)
+
+OLD LOCATION: Piece [BLACK] at (4, 1)
+NEW LOCATION: Piece [BLACK] at (2, 3)
+	EATEN PIECE: Piece [WHITE] at (3, 2)
+
+OLD LOCATION: Piece [WHITE] at (1, 4)
+NEW LOCATION: Piece [WHITE] at (3, 2)
+	EATEN PIECE: Piece [BLACK] at (2, 3)
+
+OLD LOCATION: Piece [BLACK] at (6, 1)
+NEW LOCATION: Piece [BLACK] at (5, 2)
 
