@@ -1,8 +1,6 @@
 package controller;
 
 import java.util.ArrayList;
-import java.util.Random;
-
 import model.Color;
 import model.Move;
 import model.Piece;

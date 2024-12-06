@@ -110,9 +110,6 @@ public class Move {
 	}
 
 
-
-
-
 	private static boolean validIndex(int x, int y) {
 
 		if (x>= 0 && x<8)

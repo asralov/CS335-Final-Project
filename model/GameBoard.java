@@ -1,21 +1,15 @@
 package model;
-// Amyra and Abror's task
-// Suggestion: Make it create once and make it reusable all the time
-// not a FLYWEIGHT class
-import java.util.ArrayList;
 
+import java.util.ArrayList;  
 
 public class GameBoard {
     private Piece[][] board;
     private ArrayList<Piece> blackPieces = new ArrayList<Piece>();
     private ArrayList<Piece> whitePieces = new ArrayList<Piece>();
-    // cell and pieces array (Amyra)
 
     public GameBoard()
     {
         init_board(); // getting a board
-        // init_white();  // initialize the white player pieces
-        // init_black();  // initialize the black player pieces
     }
     
     
@@ -184,9 +178,7 @@ public class GameBoard {
     		for (int j = 0; j < 8; j++) {
     			if (board[i][j] != null) {
     				copy[i][j] = new Piece(board[i][j]);
-    			}
-    			// copy[i][j] = new Cell(board[i][j]);
-                
+    			}                
     		}
     	}
     	
@@ -195,7 +187,6 @@ public class GameBoard {
     
     public void setBoard(Piece[][] newBoard) {
         this.board = newBoard;
-
         // Rebuild the white and black piece lists
         whitePieces.clear();
         blackPieces.clear();
