@@ -1,3 +1,4 @@
+
 OLD LOCATION: Piece [WHITE] at (2, 5)
 NEW LOCATION: Piece [WHITE] at (3, 4)
 
