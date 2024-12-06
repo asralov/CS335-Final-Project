@@ -140,11 +140,6 @@ public class Game implements State, GameManager.GameOverListener {
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
-
-        // Add cells to the game panel
-        updateBoard();
-
         // Add the game panel to the wrapper
         if (gamePanel == null) {
             gamePanel = new JPanel(new GridLayout(8, 8));
@@ -195,7 +190,7 @@ public class Game implements State, GameManager.GameOverListener {
 
     private void initializeNewGame() {
         gameBoard = new GameBoard();
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
         updateBoard();
     }
 
@@ -205,7 +200,7 @@ public class Game implements State, GameManager.GameOverListener {
             gameBoard = new GameBoard();
         }
 
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
 
         // Set the turn in GameManager
         gameManager.setTurn(this.turn);
@@ -417,7 +412,7 @@ public class Game implements State, GameManager.GameOverListener {
             writer.write("    ],\n");
 
             // Save the turn
-            writer.write("    \"turn\": \"" + (turn == model.Color.WHITE ? "WHITE" : "BLACK") + "\"\n");
+            writer.write("    \"turn\": \"" + (gameManager.getCurrentTurn() == model.Color.WHITE ? "WHITE" : "BLACK") + "\"\n");
 
             writer.write("  }\n");
             writer.write("}\n");
