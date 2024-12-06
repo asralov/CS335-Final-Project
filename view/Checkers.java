@@ -10,7 +10,7 @@ public class Checkers {
         
         window = new JFrame("Checkers");
 
-        SoundPlayer.playSound("./assets/music.wav");
+        SoundPlayer.playSound("./assets/music1.wav");
 
         // default position to be a center of the window
         window.setLocationRelativeTo(null);
