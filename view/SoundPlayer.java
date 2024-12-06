@@ -16,7 +16,7 @@ public class SoundPlayer {
             clip.start();
 
             // Ensure the program waits for the clip to finish
-            clip.drain(); 
+           
         } catch (UnsupportedAudioFileException e) {
             System.err.println("The specified audio file is not supported: " + soundName);
         } catch (IOException e) {
@@ -28,8 +28,8 @@ public class SoundPlayer {
         }
     }
 
-    public static void main(String[] args) {
-        String soundName = "./assets/music.wav";
-        playSound(soundName);
-    }
+    // public static void main(String[] args) {
+    //     String soundName = "./assets/music.wav";
+    //     playSound(soundName);
+    // }
 }
