@@ -7,7 +7,10 @@ import controller.GameModeEnum;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Menu implements State {
     private String mode;
@@ -146,11 +149,41 @@ public class Menu implements State {
         });
         
         contButton.addActionListener(e -> {
-            Game loadedGame = new Game();
-            Checkers.game_state = loadedGame;
-            loadedGame.loadGameState("saved_game.txt");
-            loadedGame.setupLoaded(Checkers.window);
+            try {
+                // Read the game mode from a file
+                String gameMode;
+                try (BufferedReader reader = new BufferedReader(new FileReader("game_mode.txt"))) {
+                    gameMode = reader.readLine().trim();
+                    if (gameMode.equals("PvP")) {
+                    	pvp(); 
+                    } else {
+                    	pvc(); 
+                    }
+                    
+                }
+
+                // Create a new Game instance based on the loaded game mode
+                Game loadedGame = new Game();
+                Checkers.game_state = loadedGame;
+
+                // Load the saved game state
+                loadedGame.loadGameState("saved_game.txt");
+                loadedGame.setupLoaded(Checkers.window);
+
+                System.out.println("Loaded Game Mode: " + gameMode);
+
+                // Additional logic based on game mode can be added later
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(
+                    Checkers.window,
+                    "Failed to load game mode. Please ensure the game_mode.txt file exists.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
         });
+
 
 
 
