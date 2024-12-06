@@ -457,6 +457,7 @@ public class Game implements State, GameManager.GameOverListener {
     // Add this method for saving game state
     private void saveGameState(String filename) {
         try {
+            // Save game state to "saved_game.txt"
             FileWriter writer = new FileWriter(filename);
             writer.write("{\n");
             writer.write("  \"gameState\": {\n");
@@ -503,10 +504,15 @@ public class Game implements State, GameManager.GameOverListener {
             writer.write("}\n");
             writer.close();
 
-            System.out.println("Game saved successfully to " + filename);
+            // Save the game mode to "game_mode.txt"
+            FileWriter modeWriter = new FileWriter("game_mode.txt");
+            modeWriter.write(Checkers.mode.name());
+            modeWriter.close();
+
+            System.out.println("Game and mode saved successfully.");
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Failed to save game.");
+            System.err.println("Failed to save game or mode.");
         }
     }
 
