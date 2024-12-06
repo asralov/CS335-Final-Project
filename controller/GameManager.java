@@ -2,22 +2,15 @@ package controller;
 
 import java.util.ArrayList;
 import java.util.EventObject;
-
 import java.util.HashSet;
-
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
 import model.Piece;
 import model.GameBoard;
 import model.Move;
 import view.Cell;
 import view.Game;
-
-//import model.Color;
 import java.awt.Color;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class GameManager {
 	private JPanel gamePanel;
@@ -128,7 +121,6 @@ public class GameManager {
 
 			if (isValidMove) {
 				moveCountUntilDraw--;
-            	//System.out.println("Valid");
             	for (ArrayList<int[]> path : possiblePaths) {
             		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
             			System.out.println("FOUND PATH, MOVING...");
@@ -165,7 +157,6 @@ public class GameManager {
 				}
 
 			} else {
-				// System.out.println("Invalid");
 				// Revert state
 				this.selectedPiece = null;
 				this.gameState = GameStateEnum.Unselected;

@@ -12,16 +12,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import javax.swing.*;
-
 import controller.GameManager;
 import controller.GameModeEnum;
 import controller.GameManager.GameOverEvent;
 import controller.GameManager.GetMovedPieces;
 import model.*;
-
 
 public class Game implements State, GameManager.GameOverListener {
     private GameBoard gameBoard; // Backend game board
@@ -29,22 +28,16 @@ public class Game implements State, GameManager.GameOverListener {
     private JPanel gamePanel; // UI panel for the board
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
-    
     private JLabel capturedPiecesLabelWhite;
     private JLabel capturedPiecesLabelBlack;
     private JPanel timerPanel;
-
-
     private ArrayList<MoveData> moveHistory = new ArrayList<>();
     private JTextArea moveHistoryArea;
     private JScrollPane moveHistoryScrollPane;
     private JPanel moveHistoryPanel;
 	private File moveHistoryFile; //Added this line
-
     private model.Color turn; 
-    
     private int elapsedTime = 0; // Time in seconds
-    private boolean gameLoaded = false; 
     public static JLabel curr;
    
     @Override
@@ -127,10 +120,7 @@ public class Game implements State, GameManager.GameOverListener {
             piecePanelBlack.add(capturedPiecesLabelBlack);
 
             // Add black piece panel to timer panel
-            timerPanel.add(piecePanelBlack);
-
-            // 
-            
+            timerPanel.add(piecePanelBlack);            
         }
 
         // Wrapper panel for the game board
@@ -152,10 +142,6 @@ public class Game implements State, GameManager.GameOverListener {
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
-        // mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
-
-
-        //HISTOGRAM PANEL
 
         // HISTOGRAM PANEL
         moveHistoryArea = new JTextArea();
@@ -287,14 +273,11 @@ public class Game implements State, GameManager.GameOverListener {
             Piece[][] board = new Piece[8][8]; // Prepare an empty board
             StringBuilder historyText = new StringBuilder();
             String turn = "WHITE"; // Default turn
-            boolean boardFilled = false; 
-            
+
+            // Read through the file
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
-                if (boardFilled) {
-                	break; 
-                }
                 if (line.startsWith("\"board\": [")) {
                     isBoardSection = true;
                     continue;
@@ -313,68 +296,66 @@ public class Game implements State, GameManager.GameOverListener {
                     String[] cells = line.replace("[", "").replace("]", "").split("},");
                     for (int colIndex = 0; colIndex < cells.length && colIndex < 8; colIndex++) {
                         String cell = cells[colIndex].trim();
-                        
-                            cell = cell.replace("{", "").replace("}", "").trim();
-                            String[] attributes = cell.split(",");
-                            String color = "";
-                            boolean isKing = false;
-                            int row = board.length - 1, col = colIndex;
 
-                            for (String attribute : attributes) {
-                                String[] keyValue = attribute.split(":");
-                                if (keyValue.length < 2) continue;
-                                String key = keyValue[0].trim().replace("\"", "");
-                                String value = keyValue[1].trim().replace("\"", "");
+                        if (cell.equals("null")) {
+                            continue; // Skip null cells
+                        }
 
-                                switch (key) {
-                                    case "color":
-                                        color = value;
-                                        break;
-                                    case "king":
-                                        isKing = Boolean.parseBoolean(value);
-                                        break;
-                                    case "row":
-                                        row = Integer.parseInt(value);
-                                        break;
-                                    case "col":
-                                        col = Integer.parseInt(value);
-                                        break;
-                                }
+                        cell = cell.replace("{", "").replace("}", "").trim();
+                        String[] attributes = cell.split(",");
+                        String color = "";
+                        boolean isKing = false;
+                        int row = -1, col = -1;
+
+                        for (String attribute : attributes) {
+                            String[] keyValue = attribute.split(":");
+                            if (keyValue.length < 2) continue;
+                            String key = keyValue[0].trim().replace("\"", "");
+                            String value = keyValue[1].trim().replace("\"", "");
+
+                            switch (key) {
+                                case "color":
+                                    color = value;
+                                    break;
+                                case "king":
+                                    isKing = Boolean.parseBoolean(value);
+                                    break;
+                                case "row":
+                                    row = Integer.parseInt(value);
+                                    break;
+                                case "col":
+                                    col = Integer.parseInt(value);
+                                    break;
+                            }
+                        }
+
+                        // Validate row, column, and square color
+                        if (row >= 0 && row < 8 && col >= 0 && col < 8 && (row + col) % 2 != 0) {
+                            Piece piece = new Piece(
+                                    color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
+                                    row, col
+                            );
+                            if (isKing) piece.ToKing();
+
+                            // Debugging: Check for overwriting
+                            if (board[row][col] != null) {
+                                System.err.println("Overwriting piece at row: " + row + ", col: " + col + " with " + piece);
                             }
 
-                            // Validate row, column, and square color
-                            if (row >= 0 && row < 8 && col >= 0 && col < 8 && (row + col) % 2 != 0) {
-                            	if (color.equals("WHITE")) {
-                            		Piece piece = new Piece(
-                                            color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
-                                            row, col
-                                        );
-                                        if (isKing) piece.ToKing();
-                                        board[row][col] = piece;
-                            	} else if (color.equals("BLACK")) {
-                            		Piece piece = new Piece(
-                                            color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
-                                            row, col
-                                        );
-                                        if (isKing) piece.ToKing();
-                                        board[row][col] = piece;
-                            	}
-                            	
-                            } else {
-                                System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
-                            }
-                            
-                        
-                        
+                            board[row][col] = piece;
+                            System.out.println("Placed piece: " + piece + " at row: " + row + ", col: " + col);
+                        } else {
+                            System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
+                        }
                     }
                 }
+
 
                 if (isHistorySection) {
                     if (line.equals("]") || line.equals("],")) {
                         isHistorySection = false;
                         continue;
                     }
-
                     historyText.append(line.replace("\"", "").replace(",", "")).append("\n");
                 }
 
@@ -383,7 +364,12 @@ public class Game implements State, GameManager.GameOverListener {
                 }
             }
 
-            // Apply the loaded board
+            // Debugging: Print final board state before applying it
+            System.out.println("Final board state before applying:");
+            for (int i = 0; i < board.length; i++) {
+                System.out.println(Arrays.toString(board[i]));
+            }
+
             gameBoard.setBoard(board);
 
             // Update the turn
@@ -397,17 +383,13 @@ public class Game implements State, GameManager.GameOverListener {
                 System.err.println("moveHistoryArea is not initialized.");
             }
 
-            gameLoaded = true;
             System.out.println("Game loaded successfully from " + filename);
+
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Failed to load game.");
         }
     }
-
-
-
-
 
 
     private void Does_User_Want() {
@@ -625,8 +607,6 @@ public class Game implements State, GameManager.GameOverListener {
     	    }
     	}
 
-
-
     //Updates the move history text area and scrolls to the bottom
      private void updateMoveHistory() {
     	    StringBuilder historyText = new StringBuilder();
@@ -692,7 +672,6 @@ public class Game implements State, GameManager.GameOverListener {
 
     @Override
     public void setup(JFrame window) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 }

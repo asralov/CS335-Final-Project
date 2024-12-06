@@ -7,7 +7,6 @@ public class Piece {
     private int y; 
 
     public Piece(Color color, int x, int y) {
-        // assert ((x+y)%2==0): "Invalid Piece";
         this.color = color;
         this.x = x;
         this.y = y;

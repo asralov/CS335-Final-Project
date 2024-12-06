@@ -27,9 +27,4 @@ public class SoundPlayer {
             System.err.println("Unexpected error: " + e.getMessage());
         }
     }
-
-    // public static void main(String[] args) {
-    //     String soundName = "./assets/music.wav";
-    //     playSound(soundName);
-    // }
 }

@@ -14,11 +14,9 @@ public class Cell extends JButton{
 	private int x; 
 	private int y; 
 	private Piece piece; 
-	// private Color color; 
 	
     public Cell(Color color, Piece piece, int x, int y)
     {
-    	// this.color = color; 
     	this.x = x; 
     	this.y = y; 
     	
