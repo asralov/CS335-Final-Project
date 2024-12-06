@@ -60,6 +60,7 @@ public class GameManager {
 		// this.move = new Move();
 		this.move_count = 0;
 		this.gameState = GameStateEnum.Unselected;
+		currentTurn = model.Color.WHITE;
 	}
 
 	public void setTurn(model.Color turn) {
