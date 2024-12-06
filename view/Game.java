@@ -6,6 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -26,6 +31,13 @@ public class Game implements State, GameManager.GameOverListener {
     private JLabel capturedPiecesLabelWhite;
     private JLabel capturedPiecesLabelBlack;
     private JPanel timerPanel;
+
+
+    private ArrayList<MoveData> moveHistory = new ArrayList<>();
+    private JTextArea moveHistoryArea;
+    private JScrollPane moveHistoryScrollPane;
+    private JPanel moveHistoryPanel;
+	private File moveHistoryFile; //Added this line
 
     private int elapsedTime = 0; // Time in seconds
 
@@ -147,7 +159,7 @@ public class Game implements State, GameManager.GameOverListener {
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
 
         // Add cells to the game panel
         updateBoard();
@@ -161,6 +173,28 @@ public class Game implements State, GameManager.GameOverListener {
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
         // mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
 
+
+        //HISTOGRAM PANEL
+        moveHistoryArea = new JTextArea();
+        moveHistoryArea.setEditable(false);
+        moveHistoryScrollPane = new JScrollPane(moveHistoryArea);
+        moveHistoryScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        moveHistoryPanel = new JPanel(new BorderLayout());
+        moveHistoryPanel.add(moveHistoryScrollPane, BorderLayout.CENTER);
+        moveHistoryPanel.setPreferredSize(new Dimension(200, 400)); // Adjust size as needed
+		try {
+			moveHistoryFile = new File("move_history.txt");
+			if(moveHistoryFile.createNewFile()){
+				System.out.println("File created: " + moveHistoryFile.getName());
+			}else{
+				System.out.println("File already exists.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+        mainGamePanel.add(moveHistoryPanel, BorderLayout.EAST); // Add to main
+        
         // Setup the timer
         setupTimer();
         timerPanel.setOpaque(false);
@@ -334,18 +368,30 @@ public class Game implements State, GameManager.GameOverListener {
     }
 
     // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE. 
-    @Override
-    public void GetMovedPieces(GetMovedPieces event) {
+     public void GetMovedPieces(GetMovedPieces event) {
         ArrayList<Piece> pieces = event.getPieces();
-        // first piece - old location of the piece
-        // last piece - new location of the piece
-        // everything in between - eaten pieces
-        
-        System.out.println("OLD LOCATION: " + pieces.get(0));
-        for (int i = 1; i < pieces.size() - 1; i++) {
-            System.out.println("EATEN PIECE: " + pieces.get(i));
+        MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
+        moveHistory.add(move);
+        updateMoveHistory();
+
+		//Added this section to write to file
+		try (FileWriter fw = new FileWriter(moveHistoryFile, true);
+			 BufferedWriter bw = new BufferedWriter(fw);
+			 PrintWriter out = new PrintWriter(bw)) {
+			out.println(move);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
+    //Updates the move history text area and scrolls to the bottom
+    private void updateMoveHistory() {
+        StringBuilder historyText = new StringBuilder();
+        for (MoveData move : moveHistory) {
+            historyText.append(move.toString()).append("\n");
         }
-        System.out.println("NEW LOCATION: " + pieces.get(pieces.size()-1));
+        moveHistoryArea.setText(historyText.toString());
+        moveHistoryScrollPane.getVerticalScrollBar().setValue(moveHistoryScrollPane.getVerticalScrollBar().getMaximum());
     }
 
     private void showGameOverDialog(String winner) {

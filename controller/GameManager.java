@@ -6,6 +6,7 @@ import java.util.EventObject;
 import java.util.HashSet;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import model.Piece;
 import model.GameBoard;
@@ -50,7 +51,7 @@ public class GameManager
 	private boolean hasToTake = false;
 	private int moveCountUntilDraw = 40;
 
-	
+	private Timer computerMoveTimer;
 
     public GameManager()
     {
@@ -186,30 +187,31 @@ public class GameManager
         PlayerType currentPlayer = (move_count % 2 == 0) ? p1 : p2;
 		
 		if (currentPlayer instanceof Computer) {
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("COMPUTER MOVING...");
-			move_count++;
-            ArrayList<int[]> computerMove = currentPlayer.make_a_move(GetMovablePieces(), board.getBoardCopy());
-            if (!computerMove.isEmpty()) {
-				Piece pieceToMove = board.getPiece(computerMove.get(0)[0], computerMove.get(0)[1]);
-                ArrayList<Piece> histogram = board.move(computerMove, pieceToMove.getColor(), pieceToMove.isKing());
-				SendPiecesToHistogram(histogram);
-                CheckGameOver();
+			ResetHighlights();
+			HighLightCell();
+			computerMoveTimer = new Timer(1000, e -> {
 				
-				NextMove();
-            } else {
-                CheckGameOver(); // Computer has no moves
-            }
+				System.out.println("COMPUTER MOVING...");
+				move_count++;
+				ArrayList<int[]> computerMove = currentPlayer.make_a_move(GetMovablePieces(), board.getBoardCopy());
+				if (!computerMove.isEmpty()) {
+					Piece pieceToMove = board.getPiece(computerMove.get(0)[0], computerMove.get(0)[1]);
+					ArrayList<Piece> histogram = board.move(computerMove, pieceToMove.getColor(), pieceToMove.isKing());
+					SendPiecesToHistogram(histogram);
+					CheckGameOver();
+					
+					NextMove();
+				} else {
+					CheckGameOver(); // Computer has no moves
+				}
+			});
+			computerMoveTimer.setRepeats(false); // Only execute once
+            computerMoveTimer.start();
         } else {
 			System.out.println("PLAYER MOVING...");
-            CheckGameOver();
             ResetHighlights();
             move_count++;
+			CheckGameOver();
             ArrayList<Piece> pieces = GetMovablePieces();
             HighLightCell();
 			hasToTake = false;
@@ -293,7 +295,7 @@ public class GameManager
         } else if (board.getWhitePieces() == 0) {
             FireGameOverEvent("BLACK WON!");
         } else if (GetMovablePieces().size() == 0) {
-			if (move_count % 2 == 0) {
+			if (board.getBlackPieces() > board.getWhitePieces()) {
 				FireGameOverEvent("BLACK WON!");
 			} else {
 				FireGameOverEvent("WHITE WON!");
