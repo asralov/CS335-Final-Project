@@ -125,55 +125,9 @@ public class Game implements State, GameManager.GameOverListener {
             piecePanelBlack.add(circleBlack);
             piecePanelBlack.add(capturedPiecesLabelBlack);
 
-
-        // Add the image and text to the panel
-        // CirclePanelWhite circleWhite = new CirclePanelWhite();
-        // circleWhite.setPreferredSize(new Dimension(30, 30));
-        // circleWhite.setOpaque(true);
-        // piecePanelWhite.add(circleWhite);
-        // piecePanelWhite.add(capturedPiecesLabelWhite);
-
-        // Add the panel to your GUI layout
-        // timerPanel.add(piecePanelWhite); // Replace 'yourPanel' with your container
-
-        // // Create a JLabel for the captured piece count
-        // capturedPiecesLabelBlack = new JLabel("x0"); // Initial count
-        // capturedPiecesLabelBlack.setFont(new Font("Arial", Font.BOLD, 20));
-        // capturedPiecesLabelBlack.setForeground(Color.WHITE);
-        // // capturedPiecesLabelBlack.setBackground(new Color(0, 0, 0, 0));
-
-
-        // // Create a panel to hold the image and text
-        // JPanel piecePanelBlack = new JPanel();
-        // piecePanelBlack.setLayout(new FlowLayout(FlowLayout.LEFT));
-        // piecePanelBlack.setBackground(new Color(0, 0, 0, 0)); // Transparent background if needed
-
-        // // Add the image and text to the panel
-        // CirclePanelBlack circleBlack = new CirclePanelBlack();
-        // circleBlack.setPreferredSize(new Dimension(30, 30));
-        // circleBlack.setOpaque(true);
-        // piecePanelBlack.add(circleBlack);
-        // piecePanelBlack.add(capturedPiecesLabelBlack);
-        timerPanel.add(piecePanelBlack);
-
-
- 
-
-        // scoreLabel1 = new JLabel("Black Score: 0");
-        // scoreLabel1.setFont(new Font("Arial", Font.BOLD, 14));
-        // scoreLabel1.setForeground(Color.WHITE);
-
-        
-
-        // Add score labels to the score panel
-        // scorePanel.add(Box.createVerticalStrut(20)); // Spacer for aesthetics
-        // scorePanel.add(scoreLabel);
-        // scorePanel.add(Box.createVerticalStrut(20)); // Spacer between labels
-        // scorePanel.add(scoreLabel1);
             // Add black piece panel to timer panel
-            // timerPanel.add(piecePanelBlack);
+            timerPanel.add(piecePanelBlack);
         }
-
 
         // Wrapper panel for the game board
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -184,37 +138,11 @@ public class Game implements State, GameManager.GameOverListener {
         gamePanel = new JPanel(new GridLayout(8, 8));
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
-<<<<<<< HEAD
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
-
-        JPanel currentPlayerPanel = new JPanel();
-        currentPlayerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        String curr = "Current Turn: ";
-        JLabel currPlayer = new JLabel();
-        currPlayer.setFont(new Font("Arial", Font.BOLD, 20));
-        currPlayer.setForeground(new Color(255,255,255));
-        String name = (gameManager.get_move_count() % 2 == 0) ? gameManager.get_first_player_name() : gameManager.get_second_player_name();
-        curr += name;
-        currPlayer.setText(curr);
-
-        timerPanel.revalidate();
-        timerPanel.repaint();
-
-
-        timerPanel.add(currPlayer);
-
-        // Add cells to the game panel
-        updateBoard();
-
-=======
->>>>>>> origin/main
         // Add the game panel to the wrapper
         if (gamePanel == null) {
             gamePanel = new JPanel(new GridLayout(8, 8));
             gamePanel.setPreferredSize(new Dimension(700, 700));
         }
-
         wrapperPanel.add(gamePanel);
 
         // Add panels to the main game panel
@@ -260,8 +188,25 @@ public class Game implements State, GameManager.GameOverListener {
     private void initializeNewGame() {
         gameBoard = new GameBoard();
         gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+        moveHistory.clear(); // Clear any existing history for a new game
+        updateMoveHistory(); // Reset the UI for move history
+
+        try {
+            moveHistoryFile = new File("move_history.txt");
+            if (!moveHistoryFile.exists()) {
+                moveHistoryFile.createNewFile();
+            } else {
+                // Clear the file contents for a new game
+                new PrintWriter(moveHistoryFile).close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to initialize moveHistoryFile.");
+        }
+
         updateBoard();
     }
+
 
     private void initializeLoadedGame() {
         if (gameBoard == null) {
@@ -575,41 +520,47 @@ public class Game implements State, GameManager.GameOverListener {
 
   // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE.
      public void GetMovedPieces(GetMovedPieces event) {
-         ArrayList<Piece> pieces = event.getPieces();
-         MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
-         moveHistory.add(move);
+    	    ArrayList<Piece> pieces = event.getPieces();
+    	    MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
+    	    moveHistory.add(move);
 
-         // Append the new move to the history area instead of replacing it
-         if (moveHistoryArea != null) {
-             String currentText = moveHistoryArea.getText(); // Get existing text
-             moveHistoryArea.setText(currentText + move.toString() + "\n"); // Append new move
-             moveHistoryScrollPane.getVerticalScrollBar().setValue(
-                 moveHistoryScrollPane.getVerticalScrollBar().getMaximum()
-             );
-         } else {
-             System.err.println("moveHistoryArea is not initialized.");
-         }
+    	    // Append the new move to the history area instead of replacing it
+    	    if (moveHistoryArea != null) {
+    	        String currentText = moveHistoryArea.getText(); // Get existing text
+    	        moveHistoryArea.setText(currentText + move.toString() + "\n"); // Append new move
+    	        moveHistoryScrollPane.getVerticalScrollBar().setValue(
+    	            moveHistoryScrollPane.getVerticalScrollBar().getMaximum()
+    	        );
+    	    } else {
+    	        System.err.println("moveHistoryArea is not initialized.");
+    	    }
 
-         // Save the move to the file
-         try (FileWriter fw = new FileWriter(moveHistoryFile, true);
-              BufferedWriter bw = new BufferedWriter(fw);
-              PrintWriter out = new PrintWriter(bw)) {
-             out.println(move);
-         } catch (IOException e) {
-             e.printStackTrace();
-         }
-     }
+    	    // Save the move to the file
+    	    if (moveHistoryFile != null) {
+    	        try (FileWriter fw = new FileWriter(moveHistoryFile, true);
+    	             BufferedWriter bw = new BufferedWriter(fw);
+    	             PrintWriter out = new PrintWriter(bw)) {
+    	            out.println(move);
+    	        } catch (IOException e) {
+    	            e.printStackTrace();
+    	        }
+    	    } else {
+    	        System.err.println("moveHistoryFile is not initialized.");
+    	    }
+    	}
+
 
 
     //Updates the move history text area and scrolls to the bottom
-    private void updateMoveHistory() {
-        StringBuilder historyText = new StringBuilder();
-        for (MoveData move : moveHistory) {
-            historyText.append(move.toString()).append("\n");
-        }
-        moveHistoryArea.setText(historyText.toString());
-        moveHistoryScrollPane.getVerticalScrollBar().setValue(moveHistoryScrollPane.getVerticalScrollBar().getMaximum());
-    }
+     private void updateMoveHistory() {
+    	    StringBuilder historyText = new StringBuilder();
+    	    for (MoveData move : moveHistory) {
+    	        historyText.append(move.toString()).append("\n");
+    	    }
+    	    moveHistoryArea.setText(historyText.toString());
+    	    moveHistoryScrollPane.getVerticalScrollBar().setValue(moveHistoryScrollPane.getVerticalScrollBar().getMaximum());
+    	}
+
 
     private void showGameOverDialog(String winner) {
         JDialog dialog = new JDialog();
