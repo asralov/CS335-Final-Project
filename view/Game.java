@@ -6,7 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javax.swing.*;
 
 import controller.GameManager;
@@ -21,25 +26,33 @@ public class Game implements State, GameManager.GameOverListener {
     private JPanel gamePanel; // UI panel for the board
     private Timer timer; // Swing Timer
     private JLabel timerLabel; // Label to display the timer
-    private JLabel turnLabel; // Label to display the turn
+    
     private JLabel capturedPiecesLabelWhite;
     private JLabel capturedPiecesLabelBlack;
     private JPanel timerPanel;
 
+    private model.Color turn; 
+    
     private int elapsedTime = 0; // Time in seconds
-
+    private boolean gameLoaded = false; 
    
     @Override
     public void setup(JFrame window) {
-        // Initialize the game board
-        gameBoard = new GameBoard();
+        initializeUI(window);
+        initializeNewGame(); // Specific logic for a new game
+    }
 
-        // Main panel setup
-        // JPanel mainGamePanel = new JPanel(new BorderLayout());
-        // creating the base panel with BorderLayout
+    public void setupLoaded(JFrame window) {
+        initializeUI(window);
+        initializeLoadedGame(); // Specific logic for a loaded game
+    }
+
+    private void initializeUI(JFrame window) {
+        // Load background image
         ImageIcon bg_icon = new ImageIcon("./assets/game_bg.jpg");
         Image bg_img = bg_icon.getImage();
-        // Create a panel with overridden paintComponent
+
+        // Create a main panel with overridden paintComponent for background image
         JPanel mainGamePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -53,76 +66,82 @@ public class Game implements State, GameManager.GameOverListener {
         mainGamePanel.setOpaque(false);
 
         // Timer panel setup
-        timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton menu_btn = new JButton("MENU");
-        Menu.styleButton(menu_btn);
-        menu_btn.addActionListener(e -> Does_User_Want());
-        Dimension s = new Dimension(60, 30);
-        menu_btn.setPreferredSize(s);
-        menu_btn.setMinimumSize(s);
-        menu_btn.setMaximumSize(s);
+        if (timerPanel == null) {
+            timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            timerPanel.setOpaque(false); // Ensure transparency over background
 
-        timerPanel.add(menu_btn);
-        timerLabel = new JLabel("0:00");
-        timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        timerLabel.setForeground(Color.WHITE);
-        timerPanel.add(timerLabel);
+            JButton menu_btn = new JButton("MENU");
+            Menu.styleButton(menu_btn);
+            menu_btn.addActionListener(e -> Does_User_Want());
+            Dimension buttonSize = new Dimension(60, 30);
+            menu_btn.setPreferredSize(buttonSize);
+            menu_btn.setMinimumSize(buttonSize);
+            menu_btn.setMaximumSize(buttonSize);
+            timerPanel.add(menu_btn);
 
-        
-        // timerPanel.setBackground(new Color(77, 135, 50));
-        timerPanel.setPreferredSize(new Dimension(1000, 50));
+            timerLabel = new JLabel("0:00");
+            timerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            timerLabel.setForeground(Color.WHITE);
+            timerPanel.add(timerLabel);
 
-        // // Score panel setup
-        // JPanel scorePanel = new JPanel(); 
-        // scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS)); // Arrange labels vertically
-        // // scorePanel.setBackground(new Color(77, 135, 50));
-        // scorePanel.setPreferredSize(new Dimension(100, 500)); // Adjust width as needed
+            // Create panel for captured white pieces
+            capturedPiecesLabelWhite = new JLabel("x0");
+            capturedPiecesLabelWhite.setFont(new Font("Arial", Font.BOLD, 20));
+            capturedPiecesLabelWhite.setForeground(Color.WHITE);
 
+            JPanel piecePanelWhite = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            piecePanelWhite.setOpaque(false); // Transparent background
+            CirclePanelWhite circleWhite = new CirclePanelWhite();
+            circleWhite.setPreferredSize(new Dimension(30, 30));
+            circleWhite.setOpaque(true);
+            piecePanelWhite.add(circleWhite);
+            piecePanelWhite.add(capturedPiecesLabelWhite);
 
-        // scoreLabel = new JLabel("White Score: 0");
-        // scoreLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        // scoreLabel.setForeground(Color.WHITE);
+            // Add white piece panel to timer panel
+            timerPanel.add(piecePanelWhite);
 
-        // Create a JLabel for the captured piece count
-        capturedPiecesLabelWhite = new JLabel("x0"); // Initial count
-        capturedPiecesLabelWhite.setFont(new Font("Arial", Font.BOLD, 20));
-        capturedPiecesLabelWhite.setForeground(Color.WHITE);
-        // capturedPiecesLabelWhite.setBackground(new Color(0, 0, 0, 0));
+            // Create panel for captured black pieces
+            capturedPiecesLabelBlack = new JLabel("x0");
+            capturedPiecesLabelBlack.setFont(new Font("Arial", Font.BOLD, 20));
+            capturedPiecesLabelBlack.setForeground(Color.WHITE);
 
-        // Create a panel to hold the image and text
-        JPanel piecePanelWhite = new JPanel();
-        piecePanelWhite.setLayout(new FlowLayout(FlowLayout.LEFT));
-        piecePanelWhite.setBackground(new Color(0, 0, 0, 0)); // Transparent background if needed
+            JPanel piecePanelBlack = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            piecePanelBlack.setOpaque(false); // Transparent background
+            CirclePanelBlack circleBlack = new CirclePanelBlack();
+            circleBlack.setPreferredSize(new Dimension(30, 30));
+            circleBlack.setOpaque(true);
+            piecePanelBlack.add(circleBlack);
+            piecePanelBlack.add(capturedPiecesLabelBlack);
+
 
         // Add the image and text to the panel
-        CirclePanelWhite circleWhite = new CirclePanelWhite();
-        circleWhite.setPreferredSize(new Dimension(30, 30));
-        circleWhite.setOpaque(true);
-        piecePanelWhite.add(circleWhite);
-        piecePanelWhite.add(capturedPiecesLabelWhite);
+        // CirclePanelWhite circleWhite = new CirclePanelWhite();
+        // circleWhite.setPreferredSize(new Dimension(30, 30));
+        // circleWhite.setOpaque(true);
+        // piecePanelWhite.add(circleWhite);
+        // piecePanelWhite.add(capturedPiecesLabelWhite);
 
         // Add the panel to your GUI layout
-        timerPanel.add(piecePanelWhite); // Replace 'yourPanel' with your container
+        // timerPanel.add(piecePanelWhite); // Replace 'yourPanel' with your container
 
-        // Create a JLabel for the captured piece count
-        capturedPiecesLabelBlack = new JLabel("x0"); // Initial count
-        capturedPiecesLabelBlack.setFont(new Font("Arial", Font.BOLD, 20));
-        capturedPiecesLabelBlack.setForeground(Color.WHITE);
-        // capturedPiecesLabelBlack.setBackground(new Color(0, 0, 0, 0));
+        // // Create a JLabel for the captured piece count
+        // capturedPiecesLabelBlack = new JLabel("x0"); // Initial count
+        // capturedPiecesLabelBlack.setFont(new Font("Arial", Font.BOLD, 20));
+        // capturedPiecesLabelBlack.setForeground(Color.WHITE);
+        // // capturedPiecesLabelBlack.setBackground(new Color(0, 0, 0, 0));
 
 
-        // Create a panel to hold the image and text
-        JPanel piecePanelBlack = new JPanel();
-        piecePanelBlack.setLayout(new FlowLayout(FlowLayout.LEFT));
-        piecePanelBlack.setBackground(new Color(0, 0, 0, 0)); // Transparent background if needed
+        // // Create a panel to hold the image and text
+        // JPanel piecePanelBlack = new JPanel();
+        // piecePanelBlack.setLayout(new FlowLayout(FlowLayout.LEFT));
+        // piecePanelBlack.setBackground(new Color(0, 0, 0, 0)); // Transparent background if needed
 
-        // Add the image and text to the panel
-        CirclePanelBlack circleBlack = new CirclePanelBlack();
-        circleBlack.setPreferredSize(new Dimension(30, 30));
-        circleBlack.setOpaque(true);
-        piecePanelBlack.add(circleBlack);
-        piecePanelBlack.add(capturedPiecesLabelBlack);
-
+        // // Add the image and text to the panel
+        // CirclePanelBlack circleBlack = new CirclePanelBlack();
+        // circleBlack.setPreferredSize(new Dimension(30, 30));
+        // circleBlack.setOpaque(true);
+        // piecePanelBlack.add(circleBlack);
+        // piecePanelBlack.add(capturedPiecesLabelBlack);
         timerPanel.add(piecePanelBlack);
 
 
@@ -139,10 +158,14 @@ public class Game implements State, GameManager.GameOverListener {
         // scorePanel.add(scoreLabel);
         // scorePanel.add(Box.createVerticalStrut(20)); // Spacer between labels
         // scorePanel.add(scoreLabel1);
+            // Add black piece panel to timer panel
+            // timerPanel.add(piecePanelBlack);
+        }
+
 
         // Wrapper panel for the game board
         JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        // wrapperPanel.setBackground(new Color(77, 135, 50));
+        wrapperPanel.setOpaque(false); // Transparent for background visibility
         wrapperPanel.setPreferredSize(new Dimension(800, 800));
 
         // Game panel setup
@@ -172,19 +195,16 @@ public class Game implements State, GameManager.GameOverListener {
         updateBoard();
 
         // Add the game panel to the wrapper
+        if (gamePanel == null) {
+            gamePanel = new JPanel(new GridLayout(8, 8));
+            gamePanel.setPreferredSize(new Dimension(700, 700));
+        }
+
         wrapperPanel.add(gamePanel);
-        // wrapperPanel.setBorder(BorderFactory.createEmptyBorder(45, 0, 0, 0));
 
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
-        // mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
-
-        // Setup the timer
-        setupTimer();
-        timerPanel.setOpaque(false);
-        wrapperPanel.setOpaque(false);
-        // scorePanel.setOpaque(false);
 
         // Setup the window
         window.getContentPane().removeAll();
@@ -194,49 +214,186 @@ public class Game implements State, GameManager.GameOverListener {
     }
 
 
+    private void initializeNewGame() {
+        gameBoard = new GameBoard();
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+        updateBoard();
+    }
+
+    private void initializeLoadedGame() {
+        if (gameBoard == null) {
+            System.err.println("GameBoard is not initialized. Initializing a new board.");
+            gameBoard = new GameBoard();
+        }
+
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+
+        // Set the turn in GameManager
+        gameManager.setTurn(this.turn);
+
+        // Refresh the panel to reflect the loaded board
+        gamePanel.removeAll();
+        updateBoard();
+        gamePanel.revalidate();
+        gamePanel.repaint();
+
+        // Handle the first turn
+        gameManager.handleTurn();
+
+        System.out.println("Game board set up for loaded game.");
+    }
+
+
+    public void loadGameState(String filename) {
+        if (gameBoard == null) {
+            System.err.println("GameBoard is not initialized. Initializing a new board.");
+            gameBoard = new GameBoard();
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            boolean isBoardSection = false;
+            Piece[][] board = new Piece[8][8]; // Prepare an empty board
+            String turn = "WHITE"; // Default turn
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.startsWith("\"board\": [")) {
+                    isBoardSection = true;
+                    continue;
+                }
+
+                if (isBoardSection) {
+                    if (line.equals("]") || line.equals("],")) {
+                        isBoardSection = false;
+                        continue;
+                    }
+
+                    String[] cells = line.replace("[", "").replace("]", "").split("},");
+                    int colIndex = 0; // Reset column index for each row
+
+                    for (String cell : cells) {
+                        cell = cell.trim();
+                        if (cell.equals("null")) {
+                            board[board.length - 1][colIndex] = null; // Ensure placement respects current row
+                        } else {
+                            cell = cell.replace("{", "").replace("}", "").trim();
+                            String[] attributes = cell.split(",");
+                            String color = "";
+                            boolean isKing = false;
+                            int row = board.length - 1, col = colIndex; // Initialize row and column
+
+                            for (String attribute : attributes) {
+                                String[] keyValue = attribute.split(":");
+                                if (keyValue.length < 2) continue;
+                                String key = keyValue[0].trim().replace("\"", "");
+                                String value = keyValue[1].trim().replace("\"", "");
+
+                                switch (key) {
+                                    case "color":
+                                        color = value;
+                                        break;
+                                    case "king":
+                                        isKing = Boolean.parseBoolean(value);
+                                        break;
+                                    case "row":
+                                        row = Integer.parseInt(value); // Parse the actual row
+                                        break;
+                                    case "col":
+                                        col = Integer.parseInt(value); // Parse the actual column
+                                        break;
+                                }
+                            }
+
+                            if (!color.equals("WHITE") && !color.equals("BLACK")) {
+                                System.err.println("Invalid color value in save file: " + color);
+                                continue;
+                            }
+
+                            Piece piece = new Piece(color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK, row, col);
+                            if (isKing) {
+                                piece.ToKing();
+                            }
+                            board[row][col] = piece; // Place the piece in its correct position
+                        }
+                        colIndex++; // Move to the next column
+                    }
+                }
+
+                if (line.startsWith("\"turn\":")) {
+                    turn = line.split(":")[1].trim().replace("\"", "").replace(",", "");
+                }
+            }
+
+            // Use setBoard to apply the loaded board
+            gameBoard.setBoard(board);
+
+            // Update the turn
+            this.setTurn(turn.equals("BLACK") ? model.Color.BLACK : model.Color.WHITE);
+
+            gameLoaded = true;
+            System.out.println("Game loaded successfully from " + filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to load game.");
+        }
+    }
+
+
     private void Does_User_Want() {
         // Create the dialog
         JDialog dialog = new JDialog();
-        // dialog.setTitle("");
         dialog.setSize(500, 350);
-        dialog.setLayout(new GridLayout(2, 1));
+        dialog.setLayout(new GridLayout(3, 1));
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setModal(true);
 
         // Create a label with the message
-        JLabel label = new JLabel("DO YOU WANT TO GO THE MAIN MENU?", SwingConstants.CENTER);
+        JLabel label = new JLabel("DO YOU WANT TO SAVE THE GAME BEFORE GOING TO THE MAIN MENU?", SwingConstants.CENTER);
         dialog.add(label);
 
         // Create a panel for the buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
 
-        // Create the "Yes" button
-        JButton yesButton = new JButton("YES");
-        yesButton.addActionListener(new ActionListener() {
+        // Create the "Save & Exit" button
+        JButton saveAndExitButton = new JButton("SAVE & EXIT");
+        saveAndExitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("User chose to go to the menu.");
-                // Add logic for "Yes" button here
-                GoToMenu();
+                // Prompt user to save the game
+                saveGameState("saved_game.txt");
+                GoToMenu(); // Proceed to main menu after saving
                 dialog.dispose(); // Close the dialog
             }
         });
 
-        // Create the "No" button
-        JButton noButton = new JButton("NO");
-        noButton.addActionListener(new ActionListener() {
+        // Create the "Exit Without Saving" button
+        JButton exitWithoutSavingButton = new JButton("EXIT WITHOUT SAVING");
+        exitWithoutSavingButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("User chose not to go to the menu.");
-                // Add logic for "No" button here
+                System.out.println("User chose to exit without saving.");
+                GoToMenu(); // Proceed to main menu without saving
+                dialog.dispose(); // Close the dialog
+            }
+        });
+
+        // Create the "Cancel" button
+        JButton cancelButton = new JButton("CANCEL");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("User chose to cancel.");
                 dialog.dispose(); // Close the dialog
             }
         });
 
         // Add buttons to the button panel
-        buttonPanel.add(yesButton);
-        buttonPanel.add(noButton);
+        buttonPanel.add(saveAndExitButton);
+        buttonPanel.add(exitWithoutSavingButton);
+        buttonPanel.add(cancelButton);
 
         // Add the button panel to the dialog
         dialog.add(buttonPanel);
@@ -246,6 +403,65 @@ public class Game implements State, GameManager.GameOverListener {
 
         // Show the dialog
         dialog.setVisible(true);
+    }
+
+    // Add this method for saving game state
+    private void saveGameState(String filename) {
+        try {
+            FileWriter writer = new FileWriter(filename);
+            writer.write("{\n");
+            writer.write("  \"gameState\": {\n");
+
+            // Save the board state
+            writer.write("    \"board\": [\n");
+            Piece[][] board = gameBoard.getBoard();
+            for (int i = 0; i < board.length; i++) {
+                writer.write("      [");
+                for (int j = 0; j < board[i].length; j++) {
+                    if (board[i][j] != null) {
+                        Piece piece = board[i][j];
+                        writer.write("{");
+                        writer.write("\"color\": \"" + piece.getColor().name() + "\", ");
+                        writer.write("\"king\": " + piece.isKing() + ", ");
+                        writer.write("\"row\": " + piece.getRow() + ", ");
+                        writer.write("\"col\": " + piece.getColumn());
+                        writer.write("}");
+                    } else {
+                        writer.write("null");
+                    }
+                    if (j < board[i].length - 1) writer.write(", ");
+                }
+                writer.write("]");
+                if (i < board.length - 1) writer.write(",");
+                writer.write("\n");
+            }
+            writer.write("    ],\n");
+
+            // Save the turn
+            writer.write("    \"turn\": \"" + (turn == model.Color.WHITE ? "WHITE" : "BLACK") + "\"\n");
+
+            writer.write("  }\n");
+            writer.write("}\n");
+            writer.close();
+
+            // Debugging Output
+            System.out.println("Game saved successfully to " + filename);
+            System.out.println("Saved Turn: " + turn);
+            System.out.println("Saved Board:");
+            for (Piece[] row : board) {
+                for (Piece piece : row) {
+                    System.out.print((piece == null ? "null" : piece.toString()) + " ");
+                }
+                System.out.println();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to save game.");
+        }
+    }
+    
+    public void setTurn(model.Color turn) {
+        this.turn = turn; // Assuming `turn` is a field in the Game class
     }
 
 
@@ -269,12 +485,7 @@ public class Game implements State, GameManager.GameOverListener {
     public void handleCellClick(int row, int col) {
 
         gameManager.OnPieceClick(row, col);
-        // Set background to match parent and ensure no black background appears
-        // capturedPiecesLabelBlack.setBackground(new Color(0,0,0,255));
-        // capturedPiecesLabelWhite.setBackground(new Color(0,0,0,255));
-        // capturedPiecesLabelBlack.setOpaque(true); // or true, depending on your needs
-        // capturedPiecesLabelWhite.setOpaque(true); // or true, depending on your needs
-
+        
         int[] currentScore = gameManager.calculateScore();  
 
         String blackScore = "x" + currentScore[0];
@@ -283,67 +494,10 @@ public class Game implements State, GameManager.GameOverListener {
         capturedPiecesLabelBlack.setText(blackScore);
         timerPanel.revalidate();
         timerPanel.repaint();
-
-
-        // Ensure repaint to reflect changes
-        // capturedPiecesLabelBlack.repaint();
-        // capturedPiecesLabelWhite.repaint();
-        // Piece piece = gameBoard.getPiece(row, col);
-
-        // if (selectedPiece == null && piece != null) {
-        //     // Select a piece and highlight moves
-        //     selectedPiece = piece;
-        //     highlightPossibleMoves();
-        // } else if (selectedPiece != null) {
-        //     // Check if clicked on a valid move
-        //     for (Cell cell : highlightedCells) {
-        //         if (cell.getXCoord() == row && cell.getYCoord() == col) {
-        //             // Check if the move is a jump (capture)
-        //             int middleRow = (selectedPiece.getRow() + row) / 2;
-        //             int middleCol = (selectedPiece.getColumn() + col) / 2;
-
-        //             if (Math.abs(selectedPiece.getRow() - row) == 2 &&
-        //                 Math.abs(selectedPiece.getColumn() - col) == 2) {
-        //                 // Remove the captured piece
-        //                 gameBoard.removePiece(middleRow, middleCol);
-        //             }
-
-        //             // Move the selected piece
-        //             gameBoard.move(selectedPiece, row, col);
-        //             selectedPiece = null; // Deselect piece
-        //             clearHighlights(); // Clear highlighted moves
-        //             updateBoard(); // Refresh UI
-        //             return;
-        //         }
-        //     }
-        //     // Deselect if invalid move
-        //     selectedPiece = null;
-            // clearHighlights();
-            //updateBoard();
         }
 
     private void updateBoard() {
         gameManager.NextMove();
-        // System.out.println("UPDATING BOARD...");
-        
-        // gamePanel.removeAll();
-        // for (int row = 0; row < 8; row++) {
-        //     for (int col = 0; col < 8; col++) {
-        //         Color color = (row + col) % 2 == 0 ? new Color(246, 187, 146) : new Color(152, 86, 40);
-        //         Piece piece = gameBoard.getPiece(row, col);
-        //         Cell cell = new Cell(color, piece, row, col);
-        //         gamePanel.add(cell);
-        //     }
-        // }
-        // ArrayList<Piece> pieces = gameManager.GetMovablePieces();
-        // for (int i = 0; i < pieces.size(); i++) {
-    	// 	//HighLightCell(pieces.get(i).getColumn(), pieces.get(i).getRow());
-		// 	Cell cellToHighlight = (Cell) gamePanel.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
-		// 	cellToHighlight.highlightCell(true, new Color(122, 64, 121));
-    	// }
-        // gamePanel.revalidate();
-        // gamePanel.repaint();
-        
     }
 
      @Override
@@ -355,8 +509,6 @@ public class Game implements State, GameManager.GameOverListener {
     private void showGameOverDialog(String winner) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Game Over!");
-        // dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        // dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
         dialog.setLayout(new BorderLayout());
 
 
@@ -378,7 +530,7 @@ public class Game implements State, GameManager.GameOverListener {
         dialog.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                GoToMenu((JDialog) e.getSource()); //Get the dialog from the event
+                GoToMenu((JDialog) e.getSource()); 
             }
         });
     }
@@ -407,26 +559,6 @@ public class Game implements State, GameManager.GameOverListener {
     }
 }
 
-
-
-// class CirclePanel extends JPanel {
-//     private int diameter;
-
-//     public CirclePanel(int diameter, Color color) {
-//         this.diameter = diameter;
-//         this.setPreferredSize(new Dimension(diameter, diameter)); // Set the preferred size of the circle
-//         this.setBackground(color); // Transparent background
-//     }
-
-//     @Override
-//     protected void paintComponent(Graphics g) {
-//         super.paintComponent(g);
-//         Graphics2D g2d = (Graphics2D) g;
-//         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//         g2d.setColor(Color.WHITE); // Set the circle color to white
-//         g2d.fillOval(0, 0, diameter, diameter); // Draw the circle
-//     }
-// }
 
 class CirclePanelWhite extends JPanel {
 
