@@ -2,10 +2,12 @@ package view;
 
 import javax.swing.*;
 
+import controller.GameModeEnum;
+
 public class Checkers {
 	public static State game_state;
     public static JFrame window;
-    public static String mode;
+    public static GameModeEnum mode;
     public static void main(String[] args) {
         
         window = new JFrame("Checkers");

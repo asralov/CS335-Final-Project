@@ -61,52 +61,45 @@ public class Menu implements State {
         // adding the grid panel to the center of the base panel
         basePanel.add(gridPanel, BorderLayout.WEST);
        
-        
-        playButton.addActionListener(e -> 
-        {
-            JDialog mode_promt = new JDialog();
-            mode_promt.setLocationRelativeTo(Checkers.window);
-            mode_promt.setSize(new Dimension(300, 200));
-            mode_promt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            
-            JLabel modeString = new JLabel("Please Choose The Mode");
-            
+ 
+        playButton.addActionListener(e -> {
+            JDialog modePromt = new JDialog(Checkers.window, "Select Game Mode", true); // Make the dialog modal
+            modePromt.setLocationRelativeTo(Checkers.window);
+            modePromt.setSize(new Dimension(300, 200));
+            modePromt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            modePromt.setLayout(new GridLayout(3, 1)); // Layout for proper alignment
 
+            JLabel modeString = new JLabel("Please Choose The Mode", SwingConstants.CENTER);
             JButton playerVsPlayer = new JButton("Player VS Player");
             JButton playerVsComputer = new JButton("Player Vs Computer");
 
             styleButton(playerVsPlayer);
             styleButton(playerVsComputer);
 
-            Dimension d = new Dimension(400, 100);
-            playerVsComputer.setPreferredSize(d);
-            playerVsComputer.setMinimumSize(d);
-            playerVsComputer.setMaximumSize(d);
+            // Add action listeners to set the game mode and close the dialog
+            playerVsPlayer.addActionListener(event -> {
+                pvp(); // Set game mode to PvP
+                modePromt.dispose(); // Close the dialog
+            });
 
-            playerVsPlayer.setPreferredSize(d);
-            playerVsPlayer.setMinimumSize(d);
-            playerVsPlayer.setMaximumSize(d);
+            playerVsComputer.addActionListener(event -> {
+                pvc(); // Set game mode to PvC
+                modePromt.dispose(); // Close the dialog
+            });
 
-            playerVsPlayer.addActionListener(event-> pvp());
-            playerVsComputer.addActionListener(event -> pvc());
+            // Add components to the dialog
+            modePromt.add(modeString);
+            modePromt.add(playerVsPlayer);
+            modePromt.add(playerVsComputer);
 
-            mode_promt.add(modeString);
-            mode_promt.add(playerVsPlayer);
-            mode_promt.add(playerVsComputer);
+            modePromt.setVisible(true); // Show the modal dialog, execution will pause here until dialog is closed
 
-            mode_promt.setVisible(true);
-
-        	Game newGame = new Game(); 
-        	Checkers.game_state = newGame; 
-        	newGame.setup(Checkers.window, this.gameMode);
+            // Start the game only after mode selection
+            Game newGame = new Game();
+            Checkers.game_state = newGame;
+            newGame.setup(Checkers.window, this.gameMode);
         });
 
-        contButton.addActionListener(e -> {
-            Game loadedGame = new Game();
-            Checkers.game_state = loadedGame;
-            loadedGame.loadGameState("saved_game.txt");
-            loadedGame.setupLoaded(Checkers.window);
-        });
 
 
         gridPanel.add(contButton, gbc);
@@ -124,18 +117,20 @@ public class Menu implements State {
     {
         Checkers.game_state = new Game();
         Checkers.game_state.setup(Checkers.window);
-        Checkers.mode = mode;
     }
 
     private void pvc() {
-        this.gameMode = GameModeEnum.PvC;
+        Checkers.mode = GameModeEnum.PvC;
     }
 
     private void pvp()
     {
-        this.gameMode = GameModeEnum.PvP;
+    	Checkers.mode = GameModeEnum.PvP;
     }
-    
+//    public GameModeEnum getMode()
+//    {
+//    	return()
+//    }
 
     public static void styleButton(JButton button) {
         Dimension size = new Dimension(400, 60);

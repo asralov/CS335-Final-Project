@@ -191,7 +191,7 @@ public class Game implements State, GameManager.GameOverListener {
 
     private void initializeNewGame() {
         gameBoard = new GameBoard();
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+        gameManager = new GameManager(gamePanel, gameBoard, this, Checkers.mode);
 
         curr = new JLabel();
         String curr_turn = "Current Turn: ";
@@ -235,7 +235,7 @@ public class Game implements State, GameManager.GameOverListener {
             gameBoard = new GameBoard();
         }
 
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+        gameManager = new GameManager(gamePanel, gameBoard, this, Checkers.mode);
 
         curr = new JLabel();
         String curr_turn = "Current Turn: ";
