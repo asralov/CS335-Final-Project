@@ -287,10 +287,14 @@ public class Game implements State, GameManager.GameOverListener {
             Piece[][] board = new Piece[8][8]; // Prepare an empty board
             StringBuilder historyText = new StringBuilder();
             String turn = "WHITE"; // Default turn
-
+            boolean boardFilled = false; 
+            
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
+                if (boardFilled) {
+                	break; 
+                }
                 if (line.startsWith("\"board\": [")) {
                     isBoardSection = true;
                     continue;
@@ -342,16 +346,28 @@ public class Game implements State, GameManager.GameOverListener {
 
                             // Validate row, column, and square color
                             if (row >= 0 && row < 8 && col >= 0 && col < 8 && (row + col) % 2 != 0) {
-                                Piece piece = new Piece(
-                                    color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
-                                    row, col
-                                );
-                                if (isKing) piece.ToKing();
-                                board[row][col] = piece;
+                            	if (color.equals("WHITE")) {
+                            		Piece piece = new Piece(
+                                            color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
+                                            row, col
+                                        );
+                                        if (isKing) piece.ToKing();
+                                        board[row][col] = piece;
+                            	} else if (color.equals("BLACK")) {
+                            		Piece piece = new Piece(
+                                            color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
+                                            row, col
+                                        );
+                                        if (isKing) piece.ToKing();
+                                        board[row][col] = piece;
+                            	}
+                            	
                             } else {
                                 System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
                             }
+                            
                         }
+                        
                     }
                 }
 

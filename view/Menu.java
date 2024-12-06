@@ -161,7 +161,7 @@ public class Menu implements State {
                     }
                     
                 }
-
+ 
                 // Create a new Game instance based on the loaded game mode
                 Game loadedGame = new Game();
                 Checkers.game_state = loadedGame;
