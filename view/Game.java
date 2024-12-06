@@ -192,6 +192,7 @@ public class Game implements State, GameManager.GameOverListener {
     private void initializeNewGame() {
         gameBoard = new GameBoard();
         gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+
         curr = new JLabel();
         String curr_turn = "Current Turn: ";
         if (gameManager.getCurrentTurn().name().equals("WHITE"))
@@ -206,6 +207,7 @@ public class Game implements State, GameManager.GameOverListener {
         curr.setFont(new Font("Arial", Font.BOLD, 20));
         curr.setForeground(Color.WHITE);
         timerPanel.add(curr);
+
 
         moveHistory.clear(); // Clear any existing history for a new game
         updateMoveHistory(); // Reset the UI for move history
@@ -308,7 +310,7 @@ public class Game implements State, GameManager.GameOverListener {
                             String[] attributes = cell.split(",");
                             String color = "";
                             boolean isKing = false;
-                            int row = 0, col = colIndex;
+                            int row = board.length - 1, col = colIndex;
 
                             for (String attribute : attributes) {
                                 String[] keyValue = attribute.split(":");
@@ -317,28 +319,31 @@ public class Game implements State, GameManager.GameOverListener {
                                 String value = keyValue[1].trim().replace("\"", "");
 
                                 switch (key) {
-                                    case "color": color = value; break;
-                                    case "king": isKing = Boolean.parseBoolean(value); break;
-                                    case "row": row = Integer.parseInt(value); break;
-                                    case "col": col = Integer.parseInt(value); break;
+                                    case "color":
+                                        color = value;
+                                        break;
+                                    case "king":
+                                        isKing = Boolean.parseBoolean(value);
+                                        break;
+                                    case "row":
+                                        row = Integer.parseInt(value);
+                                        break;
+                                    case "col":
+                                        col = Integer.parseInt(value);
+                                        break;
                                 }
                             }
 
-                            // Validate row and column indices
-                            if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-                                // Validate square color (pieces should only be on black squares)
-                                if ((row + col) % 2 != 0) { // Black square validation
-                                    Piece piece = new Piece(
-                                        color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
-                                        row, col
-                                    );
-                                    if (isKing) piece.ToKing();
-                                    board[row][col] = piece;
-                                } else {
-                                    System.err.println("Invalid position for piece at row " + row + ", col " + col);
-                                }
+                            // Validate row, column, and square color
+                            if (row >= 0 && row < 8 && col >= 0 && col < 8 && (row + col) % 2 != 0) {
+                                Piece piece = new Piece(
+                                    color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
+                                    row, col
+                                );
+                                if (isKing) piece.ToKing();
+                                board[row][col] = piece;
                             } else {
-                                System.err.println("Row or column out of bounds: row " + row + ", col " + col);
+                                System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
                             }
                         }
                     }
@@ -351,7 +356,6 @@ public class Game implements State, GameManager.GameOverListener {
                     }
 
                     historyText.append(line.replace("\"", "").replace(",", "")).append("\n");
-                    
                 }
 
                 if (line.startsWith("\"turn\":")) {
@@ -359,13 +363,13 @@ public class Game implements State, GameManager.GameOverListener {
                 }
             }
 
-            // Use setBoard to apply the loaded board
+            // Apply the loaded board
             gameBoard.setBoard(board);
 
             // Update the turn
             this.setTurn(turn.equals("BLACK") ? model.Color.BLACK : model.Color.WHITE);
 
-            // Update the move history (if moveHistoryArea exists)
+            // Load move history
             if (moveHistoryArea != null) {
                 moveHistoryArea.setText(historyText.toString());
                 moveHistoryArea.setText(moveHistoryArea.getText() + "\n");
@@ -380,6 +384,7 @@ public class Game implements State, GameManager.GameOverListener {
             System.err.println("Failed to load game.");
         }
     }
+
 
 
 
