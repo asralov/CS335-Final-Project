@@ -6,6 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,6 +23,7 @@ import javax.swing.*;
 import controller.GameManager;
 import controller.GameModeEnum;
 import controller.GameManager.GameOverEvent;
+import controller.GameManager.GetMovedPieces;
 import model.*;
 
 
@@ -30,6 +37,13 @@ public class Game implements State, GameManager.GameOverListener {
     private JLabel capturedPiecesLabelWhite;
     private JLabel capturedPiecesLabelBlack;
     private JPanel timerPanel;
+
+
+    private ArrayList<MoveData> moveHistory = new ArrayList<>();
+    private JTextArea moveHistoryArea;
+    private JScrollPane moveHistoryScrollPane;
+    private JPanel moveHistoryPanel;
+	private File moveHistoryFile; //Added this line
 
     private model.Color turn; 
     
@@ -123,6 +137,10 @@ public class Game implements State, GameManager.GameOverListener {
         wrapperPanel.setPreferredSize(new Dimension(800, 800));
 
         // Game panel setup
+        gamePanel = new JPanel(new GridLayout(8, 8));
+        gamePanel.setPreferredSize(new Dimension(700, 700));
+
+        // Add the game panel to the wrapper
         if (gamePanel == null) {
             gamePanel = new JPanel(new GridLayout(8, 8));
             gamePanel.setPreferredSize(new Dimension(700, 700));
@@ -132,6 +150,35 @@ public class Game implements State, GameManager.GameOverListener {
         // Add panels to the main game panel
         mainGamePanel.add(timerPanel, BorderLayout.NORTH); // Timer at the top
         mainGamePanel.add(wrapperPanel, BorderLayout.CENTER); // Board in the center
+        // mainGamePanel.add(scorePanel, BorderLayout.EAST); // Score panel on the right side
+
+
+        //HISTOGRAM PANEL
+        moveHistoryArea = new JTextArea();
+        moveHistoryArea.setEditable(false);
+        moveHistoryScrollPane = new JScrollPane(moveHistoryArea);
+        moveHistoryScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        moveHistoryPanel = new JPanel(new BorderLayout());
+        moveHistoryPanel.add(moveHistoryScrollPane, BorderLayout.CENTER);
+        moveHistoryPanel.setPreferredSize(new Dimension(200, 400)); // Adjust size as needed
+		try {
+			moveHistoryFile = new File("move_history.txt");
+			if(moveHistoryFile.createNewFile()){
+				System.out.println("File created: " + moveHistoryFile.getName());
+			}else{
+				System.out.println("File already exists.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+        mainGamePanel.add(moveHistoryPanel, BorderLayout.EAST); // Add to main
+        
+        // Setup the timer
+        setupTimer();
+        timerPanel.setOpaque(false);
+        wrapperPanel.setOpaque(false);
+        // scorePanel.setOpaque(false);
 
         // Setup the window
         window.getContentPane().removeAll();
@@ -143,7 +190,7 @@ public class Game implements State, GameManager.GameOverListener {
 
     private void initializeNewGame() {
         gameBoard = new GameBoard();
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
         updateBoard();
     }
 
@@ -153,7 +200,7 @@ public class Game implements State, GameManager.GameOverListener {
             gameBoard = new GameBoard();
         }
 
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
 
         // Set the turn in GameManager
         gameManager.setTurn(this.turn);
@@ -365,7 +412,7 @@ public class Game implements State, GameManager.GameOverListener {
             writer.write("    ],\n");
 
             // Save the turn
-            writer.write("    \"turn\": \"" + (turn == model.Color.WHITE ? "WHITE" : "BLACK") + "\"\n");
+            writer.write("    \"turn\": \"" + (gameManager.getCurrentTurn() == model.Color.WHITE ? "WHITE" : "BLACK") + "\"\n");
 
             writer.write("  }\n");
             writer.write("}\n");
@@ -431,6 +478,33 @@ public class Game implements State, GameManager.GameOverListener {
     public void GameOverOccurred(GameOverEvent event) {
         String winner = event.getWinner();
         showGameOverDialog(winner);
+    }
+
+    // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE. 
+     public void GetMovedPieces(GetMovedPieces event) {
+        ArrayList<Piece> pieces = event.getPieces();
+        MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
+        moveHistory.add(move);
+        updateMoveHistory();
+
+		//Added this section to write to file
+		try (FileWriter fw = new FileWriter(moveHistoryFile, true);
+			 BufferedWriter bw = new BufferedWriter(fw);
+			 PrintWriter out = new PrintWriter(bw)) {
+			out.println(move);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+    }
+
+    //Updates the move history text area and scrolls to the bottom
+    private void updateMoveHistory() {
+        StringBuilder historyText = new StringBuilder();
+        for (MoveData move : moveHistory) {
+            historyText.append(move.toString()).append("\n");
+        }
+        moveHistoryArea.setText(historyText.toString());
+        moveHistoryScrollPane.getVerticalScrollBar().setValue(moveHistoryScrollPane.getVerticalScrollBar().getMaximum());
     }
 
     private void showGameOverDialog(String winner) {
