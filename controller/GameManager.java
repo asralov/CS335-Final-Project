@@ -6,11 +6,14 @@ import java.util.EventObject;
 import java.util.HashSet;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import model.Piece;
 import model.GameBoard;
 import model.Move;
 import view.Cell;
+import view.Game;
+
 //import model.Color;
 import java.awt.Color;
 import java.io.FileWriter;
@@ -37,6 +40,7 @@ public class GameManager {
 			p1 = new Player("Player", model.Color.WHITE);
 			p2 = new Computer("Computer", model.Color.BLACK);
 		}
+		currentTurn = p1.getColor();
 	}
 
 	private int move_count;
@@ -48,7 +52,6 @@ public class GameManager {
 
 	private boolean hasToTake = false;
 	private int moveCountUntilDraw = 40;
-
 
     public GameManager()
     {
@@ -62,6 +65,7 @@ public class GameManager {
 	{
 		return this.move_count;
 	}
+	private Timer computerMoveTimer;
 
 	public String get_first_player_name()
 	{
@@ -111,7 +115,6 @@ public class GameManager {
 			this.gameState = GameStateEnum.Selected;
 			this.selectedPiece = clickedPiece;
 			ArrayList<ArrayList<int[]>> possiblePaths = Move.getPossibleMoves(clickedPiece, board.getBoardCopy());
-			System.out.println("Highlighted Cells: ");
 			for (ArrayList<int[]> path : possiblePaths) {
 				// i is initialized at 1 so that it doesn't highlight the clicked
 				// piece
@@ -121,19 +124,16 @@ public class GameManager {
 					cell.highlightCell(true);
 					highlightedCells.add(cell);
 				}
-				// System.out.println(highlightedCells);
 
 			}
 		}
 		// click on cell
 		else {
 			// if clicked on cell while unselected the do nothing
-			// System.out.println(this.gameState);
 			if (gameState.equals(GameStateEnum.Unselected))
 				return;
 
 			ArrayList<ArrayList<int[]>> possiblePaths = Move.getPossibleMoves(selectedPiece, board.getBoardCopy());
-			System.out.println("POSSIBLE PATHS: " + possiblePaths);
 			HashSet<int[]> possibleMoves = new HashSet<>();
 			for (ArrayList<int[]> path : possiblePaths) {
 				for (int[] cell : path) {
@@ -152,15 +152,16 @@ public class GameManager {
 
 			if (isValidMove) {
 				moveCountUntilDraw--;
-				// System.out.println("Valid");
-				for (ArrayList<int[]> path : possiblePaths) {
-					if (path.get(path.size() - 1)[0] == x && path.get(path.size() - 1)[1] == y) {
-						System.out.println("FOUND PATH, MOVING...");
-						board.move(path, selectedPiece.getColor(), selectedPiece.isKing());
-						// break;
-					}
-				}
-
+            	//System.out.println("Valid");
+            	for (ArrayList<int[]> path : possiblePaths) {
+            		if (path.get(path.size()-1)[0] == x && path.get(path.size()-1)[1] == y) {
+            			System.out.println("FOUND PATH, MOVING...");
+            			ArrayList<Piece> histogram = board.move(path, selectedPiece.getColor(), selectedPiece.isKing());
+						SendPiecesToHistogram(histogram);
+            			// break;
+            		}
+            	}
+            	
 				// CHECKS IF A PIECE CAN JUMP AGAIN AFTER MOVING
 				boolean canJumpAgain = false;
 				this.selectedPiece = board.getPiece(x, y);
@@ -181,6 +182,7 @@ public class GameManager {
 					cellToHighlight.highlightCell(true);
 
 				} else {
+					SwitchCurrentTurn();
 					this.selectedPiece = null;
 					this.gameState = GameStateEnum.Unselected;
 					NextMove();
@@ -222,42 +224,68 @@ public class GameManager {
 
 	public void NextMove() {
 		System.out.println("Move Count: " + move_count);
+		System.out.println("Current move: " + currentTurn);
 		// Determine whose turn it is based on move_count
-		PlayerType currentPlayer = (move_count % 2 == 0) ? p1 : p2;
+		PlayerType currentPlayer;
+		if (currentTurn.equals(p1.getColor())) {
+			currentPlayer = p1;
+		} else {
+			currentPlayer = p2;
+		}
 
 		if (currentPlayer instanceof Computer) {
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("COMPUTER MOVING...");
-			move_count++;
-			ArrayList<int[]> computerMove = currentPlayer.make_a_move(GetMovablePieces(), board.getBoardCopy());
-			if (!computerMove.isEmpty()) {
-				Piece pieceToMove = board.getPiece(computerMove.get(0)[0], computerMove.get(0)[1]);
-				board.move(computerMove, pieceToMove.getColor(), pieceToMove.isKing());
-				CheckGameOver();
-
-				NextMove();
-			} else {
-				CheckGameOver(); // Computer has no moves
-			}
-		} else {
-			System.out.println("PLAYER MOVING...");
-			CheckGameOver();
 			ResetHighlights();
-			move_count++;
-			ArrayList<Piece> pieces = GetMovablePieces();
 			HighLightCell();
+			computerMoveTimer = new Timer(1000, e -> {
+				
+				System.out.println("COMPUTER MOVING...");
+				
+				ArrayList<int[]> computerMove = currentPlayer.make_a_move(GetMovablePieces(), board.getBoardCopy());
+				SwitchCurrentTurn();
+				move_count++;
+				if (!computerMove.isEmpty()) {
+					Piece pieceToMove = board.getPiece(computerMove.get(0)[0], computerMove.get(0)[1]);
+					ArrayList<Piece> histogram = board.move(computerMove, pieceToMove.getColor(), pieceToMove.isKing());
+					SendPiecesToHistogram(histogram);
+					CheckGameOver();
+					
+					NextMove();
+				} else {
+					CheckGameOver(); // Computer has no moves
+				}
+
+			});
+			computerMoveTimer.setRepeats(false); // Only execute once
+            computerMoveTimer.start();
+        } else {
+			System.out.println("PLAYER MOVING...");
+            ResetHighlights();
+			CheckGameOver();
+            ArrayList<Piece> pieces = GetMovablePieces();
+            HighLightCell();
 			hasToTake = false;
 			for (int i = 0; i < pieces.size(); i++) {
 				Cell cellToHighlight = (Cell) gamePanel
 						.getComponent(pieces.get(i).getRow() * 8 + pieces.get(i).getColumn());
 				cellToHighlight.highlightCell(true, new Color(122, 64, 121));
 			}
+			
+            move_count++;
 		}
+		
+	}
+
+	private void SwitchCurrentTurn() {
+		// if (move_count == 1) return;
+		if (currentTurn.equals(model.Color.BLACK)) {
+			currentTurn = model.Color.WHITE;
+		} else {
+			currentTurn = model.Color.BLACK;
+		}
+	}
+
+	public model.Color getCurrentTurn() {
+		return currentTurn;
 	}
 
 	public void ResetHighlights() {
@@ -269,7 +297,14 @@ public class GameManager {
 
 	public ArrayList<Piece> GetMovablePieces() {
 
-		ArrayList<Piece> pieces = (move_count % 2 == 0) ? board.getBlackPiecesList() : board.getWhitePiecesList();
+		ArrayList<Piece> pieces;
+
+		if (currentTurn.equals(model.Color.BLACK)) {
+			pieces = board.getBlackPiecesList();
+		} else {
+			pieces = board.getWhitePiecesList();
+		}
+
 
 		ArrayList<Piece> out = new ArrayList<Piece>();
 
@@ -290,9 +325,6 @@ public class GameManager {
 
 		if (takeables.size() != 0) {
 			System.out.println("TAKEABLE EXISTS");
-			for (int i = 0; i < takeables.size(); i++) {
-				System.out.println(takeables.get(i));
-			}
 			hasToTake = true;
 			return takeables;
 		}
@@ -305,14 +337,14 @@ public class GameManager {
 	}
 
 	public void CheckGameOver() {
-		if (moveCountUntilDraw <= 0) {
-			FireGameOverEvent("DRAW!");
-		} else if (board.getBlackPieces() == 0) {
-			FireGameOverEvent("WHITE WON!");
-		} else if (board.getWhitePieces() == 0) {
-			FireGameOverEvent("BLACK WON!");
-		} else if (GetMovablePieces().size() == 0) {
-			if (move_count % 2 == 0) {
+        if (moveCountUntilDraw <= 0) {
+            FireGameOverEvent("DRAW!");
+        } else if (board.getBlackPieces() == 0) {
+            FireGameOverEvent("WHITE WON!");
+        } else if (board.getWhitePieces() == 0) {
+            FireGameOverEvent("BLACK WON!");
+        } else if (GetMovablePieces().size() == 0) {
+			if (board.getBlackPieces() > board.getWhitePieces()) {
 				FireGameOverEvent("BLACK WON!");
 			} else {
 				FireGameOverEvent("WHITE WON!");
@@ -326,11 +358,17 @@ public class GameManager {
 		}
 	}
 
-	// Define the listener interface
-	public interface GameOverListener extends java.util.EventListener {
-		void GameOverOccurred(GameOverEvent event);
+	private void SendPiecesToHistogram(ArrayList<Piece> pieces) {
+		if (gameOverListener != null) {
+			gameOverListener.GetMovedPieces(new GetMovedPieces(this, pieces));
+		}
 	}
 
+    public interface GameOverListener extends java.util.EventListener {
+        void GameOverOccurred(GameOverEvent event);
+		void GetMovedPieces(GetMovedPieces event);
+    }
+    
 	public int[] calculateScore() {
 		int whiteCount = board.getWhitePieces();
 		int blackCount = board.getBlackPieces();
@@ -384,4 +422,19 @@ public class GameManager {
 		}
 	}
 
+	public class GetMovedPieces extends EventObject {
+		private final ArrayList<Piece> pieces;
+
+		public GetMovedPieces(Object source, ArrayList<Piece> pieces) {
+			super(source);
+			this.pieces = pieces;
+		}
+
+		public ArrayList<Piece> getPieces() {
+			return pieces;
+		}
+	}
+    
+    
+    
 }
