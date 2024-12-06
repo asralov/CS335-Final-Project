@@ -30,11 +30,11 @@ public class GameManager
 		this.gameOverListener = listener;
 		this.gameMode = mode;
 		if (gameMode.equals(GameModeEnum.PvP)) {
-			p1 = new Player("PLAYER1", model.Color.WHITE);
-			p2 = new Player("PLAYER2", model.Color.BLACK);
+			p1 = new Player("Player 1", model.Color.WHITE);
+			p2 = new Player("Player 2", model.Color.BLACK);
 		} else if (gameMode.equals(GameModeEnum.PvC)) {
-			p1 = new Player("PLAYER1", model.Color.WHITE);
-			p2 = new Computer("PLAYER2", model.Color.BLACK);
+			p1 = new Player("Player", model.Color.WHITE);
+			p2 = new Computer("Computer", model.Color.BLACK);
 		}
 	}
     private int move_count;
@@ -48,8 +48,6 @@ public class GameManager
 	private boolean hasToTake = false;
 	private int moveCountUntilDraw = 40;
 
-	
-
     public GameManager()
     {
 		if (this.board == null) this.board = new GameBoard();
@@ -57,6 +55,21 @@ public class GameManager
         this.move_count = 0;
         this.gameState = GameStateEnum.Unselected;
     }
+
+	public int get_move_count()
+	{
+		return this.move_count;
+	}
+
+	public String get_first_player_name()
+	{
+		return this.p1.getName();
+	}
+
+	public String get_second_player_name()
+	{
+		return this.p2.getName();
+	}
     
     public void OnPieceClick(int x, int y) {
 		ResetHighlights();

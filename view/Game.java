@@ -125,6 +125,9 @@ public class Game implements State, GameManager.GameOverListener {
 
         timerPanel.add(piecePanelBlack);
 
+
+ 
+
         // scoreLabel1 = new JLabel("Black Score: 0");
         // scoreLabel1.setFont(new Font("Arial", Font.BOLD, 14));
         // scoreLabel1.setForeground(Color.WHITE);
@@ -147,6 +150,23 @@ public class Game implements State, GameManager.GameOverListener {
         gamePanel.setPreferredSize(new Dimension(700, 700));
 
         gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvC);
+
+        JPanel currentPlayerPanel = new JPanel();
+        currentPlayerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        String curr = "Current Turn: ";
+        JLabel currPlayer = new JLabel();
+        currPlayer.setFont(new Font("Arial", Font.BOLD, 20));
+        currPlayer.setForeground(new Color(255,255,255));
+        String name = (gameManager.get_move_count() % 2 == 0) ? gameManager.get_first_player_name() : gameManager.get_second_player_name();
+        curr += name;
+        currPlayer.setText(curr);
+
+        timerPanel.revalidate();
+        timerPanel.repaint();
+
+
+        timerPanel.add(currPlayer);
 
         // Add cells to the game panel
         updateBoard();
