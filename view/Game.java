@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import javax.swing.*;
@@ -272,14 +273,11 @@ public class Game implements State, GameManager.GameOverListener {
             Piece[][] board = new Piece[8][8]; // Prepare an empty board
             StringBuilder historyText = new StringBuilder();
             String turn = "WHITE"; // Default turn
-            boolean boardFilled = false; 
-            
+
+            // Read through the file
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
 
-                if (boardFilled) {
-                	break; 
-                }
                 if (line.startsWith("\"board\": [")) {
                     isBoardSection = true;
                     continue;
@@ -298,70 +296,66 @@ public class Game implements State, GameManager.GameOverListener {
                     String[] cells = line.replace("[", "").replace("]", "").split("},");
                     for (int colIndex = 0; colIndex < cells.length && colIndex < 8; colIndex++) {
                         String cell = cells[colIndex].trim();
+
                         if (cell.equals("null")) {
-                            board[board.length - 1][colIndex] = null;
-                        } else {
-                            cell = cell.replace("{", "").replace("}", "").trim();
-                            String[] attributes = cell.split(",");
-                            String color = "";
-                            boolean isKing = false;
-                            int row = board.length - 1, col = colIndex;
-
-                            for (String attribute : attributes) {
-                                String[] keyValue = attribute.split(":");
-                                if (keyValue.length < 2) continue;
-                                String key = keyValue[0].trim().replace("\"", "");
-                                String value = keyValue[1].trim().replace("\"", "");
-
-                                switch (key) {
-                                    case "color":
-                                        color = value;
-                                        break;
-                                    case "king":
-                                        isKing = Boolean.parseBoolean(value);
-                                        break;
-                                    case "row":
-                                        row = Integer.parseInt(value);
-                                        break;
-                                    case "col":
-                                        col = Integer.parseInt(value);
-                                        break;
-                                }
-                            }
-
-                            // Validate row, column, and square color
-                            if (row >= 0 && row < 8 && col >= 0 && col < 8 && (row + col) % 2 != 0) {
-                            	if (color.equals("WHITE")) {
-                            		Piece piece = new Piece(
-                                            color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
-                                            row, col
-                                        );
-                                        if (isKing) piece.ToKing();
-                                        board[row][col] = piece;
-                            	} else if (color.equals("BLACK")) {
-                            		Piece piece = new Piece(
-                                            color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
-                                            row, col
-                                        );
-                                        if (isKing) piece.ToKing();
-                                        board[row][col] = piece;
-                            	}
-                            	
-                            } else {
-                                System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
-                            }
-                            
+                            continue; // Skip null cells
                         }
-                        
+
+                        cell = cell.replace("{", "").replace("}", "").trim();
+                        String[] attributes = cell.split(",");
+                        String color = "";
+                        boolean isKing = false;
+                        int row = -1, col = -1;
+
+                        for (String attribute : attributes) {
+                            String[] keyValue = attribute.split(":");
+                            if (keyValue.length < 2) continue;
+                            String key = keyValue[0].trim().replace("\"", "");
+                            String value = keyValue[1].trim().replace("\"", "");
+
+                            switch (key) {
+                                case "color":
+                                    color = value;
+                                    break;
+                                case "king":
+                                    isKing = Boolean.parseBoolean(value);
+                                    break;
+                                case "row":
+                                    row = Integer.parseInt(value);
+                                    break;
+                                case "col":
+                                    col = Integer.parseInt(value);
+                                    break;
+                            }
+                        }
+
+                        // Validate row, column, and square color
+                        if (row >= 0 && row < 8 && col >= 0 && col < 8 && (row + col) % 2 != 0) {
+                            Piece piece = new Piece(
+                                    color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
+                                    row, col
+                            );
+                            if (isKing) piece.ToKing();
+
+                            // Debugging: Check for overwriting
+                            if (board[row][col] != null) {
+                                System.err.println("Overwriting piece at row: " + row + ", col: " + col + " with " + piece);
+                            }
+
+                            board[row][col] = piece;
+                            System.out.println("Placed piece: " + piece + " at row: " + row + ", col: " + col);
+                        } else {
+                            System.err.println("Invalid position or color mismatch for piece at row " + row + ", col " + col);
+                        }
                     }
                 }
+
 
                 if (isHistorySection) {
                     if (line.equals("]") || line.equals("],")) {
                         isHistorySection = false;
                         continue;
                     }
-
                     historyText.append(line.replace("\"", "").replace(",", "")).append("\n");
                 }
 
@@ -370,7 +364,12 @@ public class Game implements State, GameManager.GameOverListener {
                 }
             }
 
-            // Apply the loaded board
+            // Debugging: Print final board state before applying it
+            System.out.println("Final board state before applying:");
+            for (int i = 0; i < board.length; i++) {
+                System.out.println(Arrays.toString(board[i]));
+            }
+
             gameBoard.setBoard(board);
 
             // Update the turn
@@ -383,7 +382,9 @@ public class Game implements State, GameManager.GameOverListener {
             } else {
                 System.err.println("moveHistoryArea is not initialized.");
             }
+
             System.out.println("Game loaded successfully from " + filename);
+
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Failed to load game.");
