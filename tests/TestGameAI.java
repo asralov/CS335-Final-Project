@@ -1,41 +1,60 @@
 package tests;
 
-import controller.GameManager;
-import model.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import model.Piece;
+import model.Color;
+import controller.Computer;
 
 import java.util.ArrayList;
 
-public class TestGameAI {
+import org.junit.jupiter.api.Test;
 
-    public static void main(String[] args) {
-        // Create a GameManager instance for testing AI
-        GameManager gameManager = new GameManager();
+class TestGameAI {
 
-        // Set up some test data (game state)
-        initializeTestGame(gameManager);
+    @Test
+    void testAI1() {
+       
+        Piece[][] board = new Piece[8][8];
+        
+        
+        board[3][4] = new Piece(Color.WHITE, 3, 4); 
+        board[3][2] = new Piece(Color.WHITE, 3, 2);
+        board[4][1] = new Piece(Color.BLACK, 4, 1); // AI's piece
+        
+        
+        board[4][1].ToKing();
+        
+        Computer aiPlayer = new Computer("AI Player", Color.BLACK);
+        ArrayList<Piece> movablePieces = new ArrayList<>();
+        movablePieces.add(board[4][1]);
 
-        // Test Simple AI move
-        System.out.println("Testing Simple AI Move:");
-        ArrayList<int[]> simpleAIMove = gameManager.simpleAI();
-        printMoveDetails(simpleAIMove);
+        ArrayList<int[]> selectedMove = aiPlayer.make_a_move(movablePieces, board);
 
+        // The longest path would be a capture sequence: (4, 1) -> (3, 2) -> (3, 4) -> (4, 5)
+        assertEquals(5, selectedMove.size()); 
+        assertArrayEquals(new int[]{3, 2}, selectedMove.get(1)); 
+        assertArrayEquals(new int[]{4, 5}, selectedMove.get(selectedMove.size()-1)); 
     }
+    
+    @Test
+    void testAI2() {
+       
+        Piece[][] board = new Piece[8][8];
+        
+        
+        board[3][4] = new Piece(Color.WHITE, 3, 4); 
+        board[4][1] = new Piece(Color.BLACK, 4, 1); // AI's piece
+        
+        Computer aiPlayer = new Computer("AI Player", Color.BLACK);
+        ArrayList<Piece> movablePieces = new ArrayList<>();
+        movablePieces.add(board[4][1]);
 
-    // Initialize the game with a simple board setup
-    private static void initializeTestGame(GameManager gameManager) {
-        // Reset game board and any other necessary state
-        gameManager = new GameManager();
-        // Add any setup here if needed, for example setting player types, move counts, etc.
-    }
-
-    // Helper method to print the details of the move
-    private static void printMoveDetails(ArrayList<int[]> move) {
-        if (move != null && !move.isEmpty()) {
-            for (int[] moveCoords : move) {
-                System.out.println("Move to: (" + moveCoords[0] + ", " + moveCoords[1] + ")");
-            }
-        } else {
-            System.out.println("No valid move found.");
-        }
+        ArrayList<int[]> selectedMove = aiPlayer.make_a_move(movablePieces, board);
+        // Since, there are no captures available, it rakes the first available longest path
+        // The longest path would be a capture sequence: (4, 1) -> (3, 2) 
+        assertEquals(2, selectedMove.size()); 
+        assertArrayEquals(new int[]{3, 2}, selectedMove.get(1)); 
+        assertArrayEquals(new int[]{3, 2}, selectedMove.get(selectedMove.size()-1)); 
     }
 }
