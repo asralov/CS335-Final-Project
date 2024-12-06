@@ -1,6 +1,9 @@
 package view;
 
 import javax.swing.*;
+
+import controller.GameModeEnum;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,6 +11,7 @@ import java.io.File;
 
 public class Menu implements State {
     private String mode;
+    private GameModeEnum gameMode;
     @Override
     public void setup(JFrame window) {
         // creating the base panel with BorderLayout
@@ -57,20 +61,45 @@ public class Menu implements State {
         // adding the grid panel to the center of the base panel
         basePanel.add(gridPanel, BorderLayout.WEST);
        
-        
-        playButton.addActionListener(e -> 
-        {
-        	Game newGame = new Game(); 
-        	Checkers.game_state = newGame; 
-        	newGame.setup(Checkers.window);
-        }
-        		);
-        contButton.addActionListener(e -> {
-            Game loadedGame = new Game();
-            Checkers.game_state = loadedGame;
-            loadedGame.loadGameState("saved_game.txt");
-            loadedGame.setupLoaded(Checkers.window);
+ 
+        playButton.addActionListener(e -> {
+            JDialog modePromt = new JDialog(Checkers.window, "Select Game Mode", true); // Make the dialog modal
+            modePromt.setLocationRelativeTo(Checkers.window);
+            modePromt.setSize(new Dimension(300, 200));
+            modePromt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            modePromt.setLayout(new GridLayout(3, 1)); // Layout for proper alignment
+
+            JLabel modeString = new JLabel("Please Choose The Mode", SwingConstants.CENTER);
+            JButton playerVsPlayer = new JButton("Player VS Player");
+            JButton playerVsComputer = new JButton("Player Vs Computer");
+
+            styleButton(playerVsPlayer);
+            styleButton(playerVsComputer);
+
+            // Add action listeners to set the game mode and close the dialog
+            playerVsPlayer.addActionListener(event -> {
+                pvp(); // Set game mode to PvP
+                modePromt.dispose(); // Close the dialog
+            });
+
+            playerVsComputer.addActionListener(event -> {
+                pvc(); // Set game mode to PvC
+                modePromt.dispose(); // Close the dialog
+            });
+
+            // Add components to the dialog
+            modePromt.add(modeString);
+            modePromt.add(playerVsPlayer);
+            modePromt.add(playerVsComputer);
+
+            modePromt.setVisible(true); // Show the modal dialog, execution will pause here until dialog is closed
+
+            // Start the game only after mode selection
+            Game newGame = new Game();
+            Checkers.game_state = newGame;
+            newGame.setup(Checkers.window, this.gameMode);
         });
+
 
 
         gridPanel.add(contButton, gbc);
@@ -88,10 +117,20 @@ public class Menu implements State {
     {
         Checkers.game_state = new Game();
         Checkers.game_state.setup(Checkers.window);
-        Checkers.mode = mode;
     }
 
-    
+    private void pvc() {
+        Checkers.mode = GameModeEnum.PvC;
+    }
+
+    private void pvp()
+    {
+    	Checkers.mode = GameModeEnum.PvP;
+    }
+//    public GameModeEnum getMode()
+//    {
+//    	return()
+//    }
 
     public static void styleButton(JButton button) {
         Dimension size = new Dimension(400, 60);
@@ -136,4 +175,11 @@ public class Menu implements State {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+    @Override
+    public void setup(JFrame window, GameModeEnum gameMode) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setup'");
+    }
 }

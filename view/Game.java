@@ -45,9 +45,10 @@ public class Game implements State, GameManager.GameOverListener {
     
     private int elapsedTime = 0; // Time in seconds
     private boolean gameLoaded = false; 
+    public static JLabel curr;
    
     @Override
-    public void setup(JFrame window) {
+    public void setup(JFrame window, GameModeEnum gameMode) {
         initializeUI(window);
         initializeNewGame(); // Specific logic for a new game
     }
@@ -127,6 +128,9 @@ public class Game implements State, GameManager.GameOverListener {
 
             // Add black piece panel to timer panel
             timerPanel.add(piecePanelBlack);
+
+            // 
+            
         }
 
         // Wrapper panel for the game board
@@ -187,7 +191,24 @@ public class Game implements State, GameManager.GameOverListener {
 
     private void initializeNewGame() {
         gameBoard = new GameBoard();
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+        gameManager = new GameManager(gamePanel, gameBoard, this, Checkers.mode);
+
+        curr = new JLabel();
+        String curr_turn = "Current Turn: ";
+        if (gameManager.getCurrentTurn().name().equals("WHITE"))
+        {
+            curr_turn += gameManager.p1name();
+        }
+        else
+        {
+            curr_turn += gameManager.p2name();
+        }
+        curr.setText(curr_turn);
+        curr.setFont(new Font("Arial", Font.BOLD, 20));
+        curr.setForeground(Color.WHITE);
+        timerPanel.add(curr);
+
+
         moveHistory.clear(); // Clear any existing history for a new game
         updateMoveHistory(); // Reset the UI for move history
 
@@ -214,7 +235,22 @@ public class Game implements State, GameManager.GameOverListener {
             gameBoard = new GameBoard();
         }
 
-        gameManager = new GameManager(gamePanel, gameBoard, this, GameModeEnum.PvP);
+        gameManager = new GameManager(gamePanel, gameBoard, this, Checkers.mode);
+
+        curr = new JLabel();
+        String curr_turn = "Current Turn: ";
+        if (gameManager.getCurrentTurn().name().equals("WHITE"))
+        {
+            curr_turn += gameManager.p1name();
+        }
+        else
+        {
+            curr_turn += gameManager.p2name();
+        }
+        curr.setText(curr_turn);
+        curr.setFont(new Font("Arial", Font.BOLD, 20));
+        curr.setForeground(Color.WHITE);
+        timerPanel.add(curr);
 
         // Set the turn in GameManager
         gameManager.setTurn(this.turn);
@@ -512,7 +548,18 @@ public class Game implements State, GameManager.GameOverListener {
         }
 
     private void updateBoard() {
+        String curr_turn = "Current Turn: ";
+        if (gameManager.getCurrentTurn().name().equals("WHITE"))
+        {
+            curr_turn += gameManager.p1name();
+        }
+        else
+        {
+            curr_turn += gameManager.p2name();
+        }
+        curr.setText(curr_turn);
         gameManager.NextMove();
+
     }
 
      @Override
@@ -615,6 +662,12 @@ public class Game implements State, GameManager.GameOverListener {
         if (timer != null) {
             timer.stop();
         }
+    }
+
+    @Override
+    public void setup(JFrame window) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setup'");
     }
 }
 
