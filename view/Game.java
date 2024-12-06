@@ -13,11 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import javax.swing.*;
 
 import controller.GameManager;
@@ -57,9 +53,11 @@ public class Game implements State, GameManager.GameOverListener {
     }
 
     public void setupLoaded(JFrame window) {
-        initializeUI(window);
-        initializeLoadedGame(); // Specific logic for a loaded game
+        initializeUI(window); // Initializes moveHistoryArea and other UI components
+        loadGameState("saved_game.txt"); // Load game data after UI initialization
+        initializeLoadedGame(); // Additional setup logic if needed
     }
+
 
     private void initializeUI(JFrame window) {
         // Load background image
@@ -154,26 +152,25 @@ public class Game implements State, GameManager.GameOverListener {
 
 
         //HISTOGRAM PANEL
+
+        // HISTOGRAM PANEL
         moveHistoryArea = new JTextArea();
         moveHistoryArea.setEditable(false);
         moveHistoryScrollPane = new JScrollPane(moveHistoryArea);
         moveHistoryScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        // Set the size of the moveHistoryPanel to match the gamePanel
         moveHistoryPanel = new JPanel(new BorderLayout());
         moveHistoryPanel.add(moveHistoryScrollPane, BorderLayout.CENTER);
-        moveHistoryPanel.setPreferredSize(new Dimension(200, 400)); // Adjust size as needed
-		try {
-			moveHistoryFile = new File("move_history.txt");
-			if(moveHistoryFile.createNewFile()){
-				System.out.println("File created: " + moveHistoryFile.getName());
-			}else{
-				System.out.println("File already exists.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        moveHistoryPanel.setPreferredSize(new Dimension(325, 700)); // Match the size of the checkerboard
+        moveHistoryPanel.setOpaque(false); // Ensure transparency if needed
 
-        mainGamePanel.add(moveHistoryPanel, BorderLayout.EAST); // Add to main
-        
+        // Add padding to the panel
+        moveHistoryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 150, 10)); // Top, Left, Bottom, Right padding
+
+        // Add the panel to the right of the checkerboard
+        mainGamePanel.add(moveHistoryPanel, BorderLayout.EAST); // Add to the right of the checkerboard
+
         // Setup the timer
         setupTimer();
         timerPanel.setOpaque(false);
@@ -227,7 +224,9 @@ public class Game implements State, GameManager.GameOverListener {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
             boolean isBoardSection = false;
+            boolean isHistorySection = false;
             Piece[][] board = new Piece[8][8]; // Prepare an empty board
+            StringBuilder historyText = new StringBuilder();
             String turn = "WHITE"; // Default turn
 
             while ((line = reader.readLine()) != null) {
@@ -235,6 +234,10 @@ public class Game implements State, GameManager.GameOverListener {
 
                 if (line.startsWith("\"board\": [")) {
                     isBoardSection = true;
+                    continue;
+                }
+                if (line.startsWith("\"history\": [")) {
+                    isHistorySection = true;
                     continue;
                 }
 
@@ -245,18 +248,16 @@ public class Game implements State, GameManager.GameOverListener {
                     }
 
                     String[] cells = line.replace("[", "").replace("]", "").split("},");
-                    int colIndex = 0; // Reset column index for each row
-
-                    for (String cell : cells) {
-                        cell = cell.trim();
+                    for (int colIndex = 0; colIndex < cells.length && colIndex < 8; colIndex++) {
+                        String cell = cells[colIndex].trim();
                         if (cell.equals("null")) {
-                            board[board.length - 1][colIndex] = null; // Ensure placement respects current row
+                            board[board.length - 1][colIndex] = null;
                         } else {
                             cell = cell.replace("{", "").replace("}", "").trim();
                             String[] attributes = cell.split(",");
                             String color = "";
                             boolean isKing = false;
-                            int row = board.length - 1, col = colIndex; // Initialize row and column
+                            int row = 0, col = colIndex;
 
                             for (String attribute : attributes) {
                                 String[] keyValue = attribute.split(":");
@@ -265,34 +266,41 @@ public class Game implements State, GameManager.GameOverListener {
                                 String value = keyValue[1].trim().replace("\"", "");
 
                                 switch (key) {
-                                    case "color":
-                                        color = value;
-                                        break;
-                                    case "king":
-                                        isKing = Boolean.parseBoolean(value);
-                                        break;
-                                    case "row":
-                                        row = Integer.parseInt(value); // Parse the actual row
-                                        break;
-                                    case "col":
-                                        col = Integer.parseInt(value); // Parse the actual column
-                                        break;
+                                    case "color": color = value; break;
+                                    case "king": isKing = Boolean.parseBoolean(value); break;
+                                    case "row": row = Integer.parseInt(value); break;
+                                    case "col": col = Integer.parseInt(value); break;
                                 }
                             }
 
-                            if (!color.equals("WHITE") && !color.equals("BLACK")) {
-                                System.err.println("Invalid color value in save file: " + color);
-                                continue;
+                            // Validate row and column indices
+                            if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+                                // Validate square color (pieces should only be on black squares)
+                                if ((row + col) % 2 != 0) { // Black square validation
+                                    Piece piece = new Piece(
+                                        color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK,
+                                        row, col
+                                    );
+                                    if (isKing) piece.ToKing();
+                                    board[row][col] = piece;
+                                } else {
+                                    System.err.println("Invalid position for piece at row " + row + ", col " + col);
+                                }
+                            } else {
+                                System.err.println("Row or column out of bounds: row " + row + ", col " + col);
                             }
-
-                            Piece piece = new Piece(color.equals("WHITE") ? model.Color.WHITE : model.Color.BLACK, row, col);
-                            if (isKing) {
-                                piece.ToKing();
-                            }
-                            board[row][col] = piece; // Place the piece in its correct position
                         }
-                        colIndex++; // Move to the next column
                     }
+                }
+
+                if (isHistorySection) {
+                    if (line.equals("]") || line.equals("],")) {
+                        isHistorySection = false;
+                        continue;
+                    }
+
+                    historyText.append(line.replace("\"", "").replace(",", "")).append("\n");
+                    
                 }
 
                 if (line.startsWith("\"turn\":")) {
@@ -306,6 +314,14 @@ public class Game implements State, GameManager.GameOverListener {
             // Update the turn
             this.setTurn(turn.equals("BLACK") ? model.Color.BLACK : model.Color.WHITE);
 
+            // Update the move history (if moveHistoryArea exists)
+            if (moveHistoryArea != null) {
+                moveHistoryArea.setText(historyText.toString());
+                moveHistoryArea.setText(moveHistoryArea.getText() + "\n");
+            } else {
+                System.err.println("moveHistoryArea is not initialized.");
+            }
+
             gameLoaded = true;
             System.out.println("Game loaded successfully from " + filename);
         } catch (IOException e) {
@@ -313,6 +329,9 @@ public class Game implements State, GameManager.GameOverListener {
             System.err.println("Failed to load game.");
         }
     }
+
+
+
 
 
     private void Does_User_Want() {
@@ -412,27 +431,29 @@ public class Game implements State, GameManager.GameOverListener {
             writer.write("    ],\n");
 
             // Save the turn
-            writer.write("    \"turn\": \"" + (gameManager.getCurrentTurn() == model.Color.WHITE ? "WHITE" : "BLACK") + "\"\n");
+            writer.write("    \"turn\": \"" + (gameManager.getCurrentTurn() == model.Color.WHITE ? "WHITE" : "BLACK") + "\",\n");
+
+            // Save the move history
+            writer.write("    \"history\": [\n");
+            String[] historyLines = moveHistoryArea.getText().split("\n");
+            for (int i = 0; i < historyLines.length; i++) {
+                writer.write("      \"" + historyLines[i].replace("\"", "\\\"") + "\"");
+                if (i < historyLines.length - 1) writer.write(",");
+                writer.write("\n");
+            }
+            writer.write("    ]\n");
 
             writer.write("  }\n");
             writer.write("}\n");
             writer.close();
 
-            // Debugging Output
             System.out.println("Game saved successfully to " + filename);
-            System.out.println("Saved Turn: " + turn);
-            System.out.println("Saved Board:");
-            for (Piece[] row : board) {
-                for (Piece piece : row) {
-                    System.out.print((piece == null ? "null" : piece.toString()) + " ");
-                }
-                System.out.println();
-            }
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Failed to save game.");
         }
     }
+
     
     public void setTurn(model.Color turn) {
         this.turn = turn; // Assuming `turn` is a field in the Game class
@@ -480,22 +501,33 @@ public class Game implements State, GameManager.GameOverListener {
         showGameOverDialog(winner);
     }
 
-    // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE. 
+  // THIS GETS TRIGGERED EVERY TIME A MOVE IS MADE.
      public void GetMovedPieces(GetMovedPieces event) {
-        ArrayList<Piece> pieces = event.getPieces();
-        MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
-        moveHistory.add(move);
-        updateMoveHistory();
+         ArrayList<Piece> pieces = event.getPieces();
+         MoveData move = new MoveData(pieces.get(0), pieces.get(pieces.size() - 1), new ArrayList<>(pieces.subList(1, pieces.size() - 1)));
+         moveHistory.add(move);
 
-		//Added this section to write to file
-		try (FileWriter fw = new FileWriter(moveHistoryFile, true);
-			 BufferedWriter bw = new BufferedWriter(fw);
-			 PrintWriter out = new PrintWriter(bw)) {
-			out.println(move);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-    }
+         // Append the new move to the history area instead of replacing it
+         if (moveHistoryArea != null) {
+             String currentText = moveHistoryArea.getText(); // Get existing text
+             moveHistoryArea.setText(currentText + move.toString() + "\n"); // Append new move
+             moveHistoryScrollPane.getVerticalScrollBar().setValue(
+                 moveHistoryScrollPane.getVerticalScrollBar().getMaximum()
+             );
+         } else {
+             System.err.println("moveHistoryArea is not initialized.");
+         }
+
+         // Save the move to the file
+         try (FileWriter fw = new FileWriter(moveHistoryFile, true);
+              BufferedWriter bw = new BufferedWriter(fw);
+              PrintWriter out = new PrintWriter(bw)) {
+             out.println(move);
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+     }
+
 
     //Updates the move history text area and scrolls to the bottom
     private void updateMoveHistory() {
