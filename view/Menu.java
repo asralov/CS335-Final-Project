@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 
 public class Menu implements State {
     private String mode;
@@ -31,18 +32,6 @@ public class Menu implements State {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 80, 10, 10);
 
-        // title
-        // JLabel title = new JLabel();
-        // ImageIcon ic = new ImageIcon("./assets/logo.png");
-        // Image img = ic.getImage();
-        // int w = 300;
-        // int h = 180; 
-        // Image scaledImage = img.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        // ImageIcon scaledIc = new ImageIcon(scaledImage);
-        // title.setIcon(scaledIc);
-        // gbc.gridx = 0;
-        // gbc.gridy = 0;
-        // gridPanel.add(title, gbc);
         
         // buttons
         JButton playButton = new JButton("NEW GAME");
@@ -67,65 +56,24 @@ public class Menu implements State {
         
         // adding the grid panel to the center of the base panel
         basePanel.add(gridPanel, BorderLayout.WEST);
-        
-        // creating a top panel for the mode button
-        // JPanel topPanel = new JPanel(new BorderLayout());
-        // topPanel.setOpaque(false);
-        // JButton modeButton = new JButton();
-        // styleButton(modeButton);
-        
-        // Dimension mode_button_size = new Dimension(100, 75);
-        // modeButton.setPreferredSize(mode_button_size);
-        // modeButton.setMaximumSize(mode_button_size);
-        // modeButton.setMinimumSize(mode_button_size);
-        // topPanel.add(modeButton, BorderLayout.EAST); 
-        
-        // basePanel.add(topPanel, BorderLayout.NORTH);
-
-        // scaling the pictures
-        // int w_icon = 70;
-        // int h_icon = 50;
-        // ImageIcon pp_ic = new ImageIcon("./assets/p_vs_p.png");
-        // Image pp_img = pp_ic.getImage().getScaledInstance(w_icon, h_icon, Image.SCALE_SMOOTH);
-        // ImageIcon p_vs_p = new ImageIcon(pp_img);
-
-        // ImageIcon pc_ic = new ImageIcon("./assets/p_vs_c.png");
-        // Image pc_img = pc_ic.getImage().getScaledInstance(w_icon, h_icon, Image.SCALE_SMOOTH);
-        // ImageIcon p_vs_c = new ImageIcon(pc_img);
-        
-        // // setting the initial icon for the mode button
-        // modeButton.setIcon(p_vs_p);     
-        // mode = "PvP";
-        
-          
-        // // mode button action listener to toggle images
-        // modeButton.addActionListener(e -> {
-        //     // checking current icon and toggle
-        //     if (modeButton.getIcon() == p_vs_p) {
-        //         modeButton.setIcon(p_vs_c);
-        //         mode = "PvC";
-        //     } else {
-        //         modeButton.setIcon(p_vs_p);
-        //         mode = "PvP";
-        //     }
-        // });
-        // // setting the initial icon for the mode button
-        // modeButton.setIcon(p_vs_p);     
        
- 
-          
-        // // mode button action listener to toggle images
-        // modeButton.addActionListener(e -> {
-        //     // checking current icon and toggle
-        //     if (modeButton.getIcon() == p_vs_p) {
-        //         modeButton.setIcon(p_vs_c);
-        //     } else {
-        //         modeButton.setIcon(p_vs_p);
-        //     }
-        // });
         
-        playButton.addActionListener(e -> switch_to_game());
-        contButton.addActionListener(e -> System.out.println("Continue button clicked!"));
+        playButton.addActionListener(e -> 
+        {
+        	Game newGame = new Game(); 
+        	Checkers.game_state = newGame; 
+        	newGame.setup(Checkers.window);
+        }
+        		);
+        contButton.addActionListener(e -> {
+            Game loadedGame = new Game();
+            Checkers.game_state = loadedGame;
+            loadedGame.loadGameState("saved_game.txt");
+            loadedGame.setupLoaded(Checkers.window);
+        });
+
+
+        gridPanel.add(contButton, gbc);
         exitButton.addActionListener(e -> System.exit(0));
         
         // setting up the window
@@ -134,6 +82,7 @@ public class Menu implements State {
         window.revalidate();
         window.repaint();
     }
+   
 
     private void switch_to_game()
     {
