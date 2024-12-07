@@ -235,15 +235,6 @@ public class GameBoard {
     }
 
     /**
-     * Returns the current state of the board.
-     *
-     * @return The board as a 2D array.
-     */
-    public Piece[][] getBoard() {
-        return board; // Return the reference to the board
-    }
-
-    /**
      * Creates and returns a deep copy of the current board.
      * This ensures that modifications to the copy do not affect the original board.
      *
