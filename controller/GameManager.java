@@ -232,8 +232,7 @@ public class GameManager {
 	 */
 	private boolean IsPieceMoveable(Piece piece, ArrayList<Piece> moveablePieces) {
 		for (int i = 0; i < moveablePieces.size(); i++) {
-			// if desired piece was found, return true
-			if (moveablePieces.get(i).equals(piece))
+			if (moveablePieces.get(i).getRow() == piece.getRow() && moveablePieces.get(i).getColumn() == piece.getColumn())
 				return true;
 		}
 		return false; // otherwise return false

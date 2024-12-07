@@ -1,3 +1,6 @@
-OLD LOCATION: Piece [WHITE] at (2, 3)
-NEW LOCATION: Piece [WHITE] at (3, 2)
+OLD LOCATION: Piece [WHITE] at (2, 1)
+NEW LOCATION: Piece [WHITE] at (3, 0)
+
+OLD LOCATION: Piece [BLACK] at (5, 0)
+NEW LOCATION: Piece [BLACK] at (4, 1)
 

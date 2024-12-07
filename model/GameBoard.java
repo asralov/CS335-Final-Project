@@ -105,7 +105,14 @@ public class GameBoard {
      * @return The list of white pieces.
      */
     public ArrayList<Piece> getWhitePiecesList() {
-        return whitePieces;
+        ArrayList<Piece> out = new ArrayList<Piece>();
+
+        for (int i = 0; i < whitePieces.size(); i++) {
+            Piece newPiece = new Piece(Color.WHITE, whitePieces.get(i).getRow(), whitePieces.get(i).getColumn());
+            out.add(newPiece);
+        }
+
+        return out;
     }
 
     /**
@@ -114,7 +121,14 @@ public class GameBoard {
      * @return The list of black pieces.
      */
     public ArrayList<Piece> getBlackPiecesList() {
-        return blackPieces;
+    	ArrayList<Piece> out = new ArrayList<Piece>();
+
+        for (int i = 0; i < blackPieces.size(); i++) {
+            Piece newPiece = new Piece(Color.BLACK, blackPieces.get(i).getRow(), blackPieces.get(i).getColumn());
+            out.add(newPiece);
+        }
+
+        return out;
     }
 
     /**
@@ -231,7 +245,10 @@ public class GameBoard {
      * @return The piece at the given position, or {@code null} if the position is empty.
      */
     public Piece getPiece(int x, int y) {
-        return board[x][y]; // Directly return the piece from the board
+        if (board[x][y] != null) {
+            return new Piece(board[x][y]); // Get a copy of piece
+        }
+        return null;
     }
 
     /**
@@ -261,6 +278,15 @@ public class GameBoard {
      */
     public void setBoard(Piece[][] newBoard) {
         this.board = newBoard; // Update the board reference
+
+        for (int i = 0; i < newBoard.length; i++) {
+            for (int j = 0; j < newBoard[i].length; j++) {
+                if (newBoard[i][j] != null) {
+                    Piece newPiece = new Piece(newBoard[i][j]);
+                    this.board[i][j] = newPiece;
+                }
+            }
+        }
 
         // Clear the current piece lists
         whitePieces.clear();
