@@ -46,13 +46,13 @@ This project implements a Checkers game using the **Model-View-Controller (MVC)*
 │   ├── tests
 │   │   ├── GameManagerTest.java
 │   │   └── ...
-├── assets
-│   ├── bg2.jpg
-│   ├── white_man.png
-│   ├── black_man.png
-│   ├── white_king.png
-│   ├── black_king.png
-│   └── ...
+├   ├── assets
+│   |   ├── bg2.jpg
+│   |   ├── white_man.png
+│   |   |── black_man.png
+│   |   ├── white_king.png
+│   |   ├── black_king.png
+│       └── ...
 ├── README.md
 └── ...
 ```
