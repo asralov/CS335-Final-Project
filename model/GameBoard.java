@@ -79,11 +79,25 @@ public class GameBoard {
     }
     
     public ArrayList<Piece> getWhitePiecesList() {
-    	return whitePieces;
+        ArrayList<Piece> out = new ArrayList<Piece>();
+
+        for (int i = 0; i < whitePieces.size(); i++) {
+            Piece newPiece = new Piece(Color.WHITE, whitePieces.get(i).getRow(), whitePieces.get(i).getColumn());
+            out.add(newPiece);
+        }
+
+        return out;
     }
 
     public ArrayList<Piece> getBlackPiecesList() {
-    	return blackPieces;
+    	ArrayList<Piece> out = new ArrayList<Piece>();
+
+        for (int i = 0; i < blackPieces.size(); i++) {
+            Piece newPiece = new Piece(Color.BLACK, blackPieces.get(i).getRow(), blackPieces.get(i).getColumn());
+            out.add(newPiece);
+        }
+
+        return out;
     }
 
     // if the move is valid
