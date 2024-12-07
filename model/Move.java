@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Move {
 
     // Temporary king status for recursive logic
-    static boolean isKing1 = true;
+    private static boolean isKing1 = true;
 
     /**
      * Calculates all possible moves for a given piece on the board.
