@@ -1,24 +1,36 @@
 package view;
 
 import javax.swing.*;
-
 import controller.GameModeEnum;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * The Menu class represents the main menu of the Checkers game.
+ * It provides options for starting a new game, continuing a saved game,
+ * and exiting the application. It also supports setting the game mode
+ * (Player vs Player or Player vs Computer).
+ */
 public class Menu implements State {
     private GameModeEnum gameMode;
+
+    /**
+     * Sets up the main menu interface.
+     *
+     * @param window The main application window to display the menu.
+     */
     @Override
     public void setup(JFrame window) {
-        // creating the base panel with BorderLayout
+        // Create the base panel with a custom background
         ImageIcon backgroundImageIcon = new ImageIcon("./assets/bg2.jpg");
         Image backgroundImage = backgroundImageIcon.getImage();
-        // Create a panel with overridden paintComponent
         JPanel basePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -28,141 +40,147 @@ public class Menu implements State {
                 }
             }
         };
-        basePanel.setLayout(new BorderLayout());      
-        // basePanel.setBackground(new Color(77, 135, 50));
-        
-        // creating a panel for the title and buttons
-        JPanel gridPanel = new JPanel(new GridBagLayout());
-        gridPanel.setOpaque(false); 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 80, 10, 10);
+        basePanel.setLayout(new BorderLayout());
 
-        
-        // buttons
+        // Create a grid panel for the title and buttons
+        JPanel gridPanel = new JPanel(new GridBagLayout());
+        gridPanel.setOpaque(false); // Ensure the panel is transparent
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 80, 10, 10); // Add padding around buttons
+
+        // Create buttons for the menu
         JButton playButton = new JButton("NEW GAME");
         playButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 0;
         gridPanel.add(playButton, gbc);
-        
+
         JButton contButton = new JButton("CONTINUE");
         contButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 1;
         gridPanel.add(contButton, gbc);
-        
+
         JButton exitButton = new JButton("EXIT");
         exitButton.setFont(new Font("Arial", Font.BOLD, 20));
         gbc.gridy = 2;
         gridPanel.add(exitButton, gbc);
-        
-        // styling buttons
+
+        // Style buttons
         styleButton(playButton);
         styleButton(contButton);
         styleButton(exitButton);
-        
-        // adding the grid panel to the center of the base panel
+
+        // Add the grid panel to the base panel
         basePanel.add(gridPanel, BorderLayout.WEST);
+
+        // Add action listener for "NEW GAME" button
         playButton.addActionListener(e -> {
-            JDialog modePromt = new JDialog(Checkers.window, "Select Game Mode", true); // Make the dialog modal
-            modePromt.setLocationRelativeTo(Checkers.window);
-            modePromt.setSize(new Dimension(300, 200));
-            modePromt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            modePromt.setLayout(new GridLayout(3, 1)); // Layout for proper alignment
+            JDialog modePrompt = new JDialog(Checkers.window, "Select Game Mode", true);
+            modePrompt.setLocationRelativeTo(Checkers.window);
+            modePrompt.setSize(new Dimension(300, 200));
+            modePrompt.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            modePrompt.setLayout(new GridLayout(3, 1));
 
             JLabel modeString = new JLabel("Please Choose The Mode", SwingConstants.CENTER);
             JButton playerVsPlayer = new JButton("Player VS Player");
-            JButton playerVsComputer = new JButton("Player Vs Computer");
+            JButton playerVsComputer = new JButton("Player VS Computer");
 
             styleButton(playerVsPlayer);
             styleButton(playerVsComputer);
 
-            // Add action listeners to set the game mode and close the dialog
+            // Action listeners for mode selection
             playerVsPlayer.addActionListener(event -> {
-                pvp(); // Set game mode to PvP
-                modePromt.dispose(); // Close the dialog
+                pvp();
+                modePrompt.dispose();
             });
 
             playerVsComputer.addActionListener(event -> {
-                pvc(); // Set game mode to PvC
-                modePromt.dispose(); // Close the dialog
+                pvc();
+                modePrompt.dispose();
             });
 
-            // Add components to the dialog
-            modePromt.add(modeString);
-            modePromt.add(playerVsPlayer);
-            modePromt.add(playerVsComputer);
+            modePrompt.add(modeString);
+            modePrompt.add(playerVsPlayer);
+            modePrompt.add(playerVsComputer);
 
-            modePromt.setVisible(true); // Show the modal dialog, execution will pause here until dialog is closed
+            modePrompt.setVisible(true);
 
-            // Start the game only after mode selection
+            // Start a new game
             Game newGame = new Game();
             Checkers.game_state = newGame;
             newGame.setup(Checkers.window, this.gameMode);
         });
-        
-        contButton.addActionListener(e -> {
-            try {
-                // Read the game mode from a file
-                String gameMode;
-                try (BufferedReader reader = new BufferedReader(new FileReader("game_mode.txt"))) {
-                    gameMode = reader.readLine().trim();
-                    if (gameMode.equals("PvP")) {
-                    	pvp(); 
-                    } else {
-                    	pvc(); 
+
+        // Add action listener for "CONTINUE" button
+        contButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Read the saved game mode from a file
+                    String gameMode;
+                    try (BufferedReader reader = new BufferedReader(new FileReader("game_mode.txt"))) {
+                        gameMode = reader.readLine().trim();
+                        if (gameMode.equals("PvP")) {
+                            pvp();
+                        } else {
+                            pvc();
+                        }
                     }
-                    
+
+                    // Load the saved game
+                    Game loadedGame = new Game();
+                    Checkers.game_state = loadedGame;
+                    loadedGame.setupLoaded(Checkers.window);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(
+                        Checkers.window,
+                        "Failed to load game mode. Please ensure the game_mode.txt file exists.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE
+                    );
                 }
- 
-                // Create a new Game instance based on the loaded game mode
-                Game loadedGame = new Game();
-                Checkers.game_state = loadedGame;
-
-                // Load the saved game state
-                //loadedGame.loadGameState("saved_game.txt");
-                loadedGame.setupLoaded(Checkers.window);
-
-                System.out.println("Loaded Game Mode: " + gameMode);
-
-                // Additional logic based on game mode can be added later
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(
-                    Checkers.window,
-                    "Failed to load game mode. Please ensure the game_mode.txt file exists.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-                );
             }
         });
 
+        // Add action listener for "EXIT" button
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
 
-
-
-        gridPanel.add(contButton, gbc);
-        exitButton.addActionListener(e -> System.exit(0));
-        
-        // setting up the window
+        // Set up the main application window
         window.getContentPane().removeAll();
         window.add(basePanel);
         window.revalidate();
         window.repaint();
     }
 
+    /**
+     * Sets the game mode to Player vs Computer.
+     */
     private void pvc() {
         Checkers.mode = GameModeEnum.PvC;
     }
 
-    private void pvp()
-    {
-    	Checkers.mode = GameModeEnum.PvP;
+    /**
+     * Sets the game mode to Player vs Player.
+     */
+    private void pvp() {
+        Checkers.mode = GameModeEnum.PvP;
     }
 
+    /**
+     * Styles a button with custom properties like size, background, and hover effects.
+     *
+     * @param button The button to style.
+     */
     public static void styleButton(JButton button) {
         Dimension size = new Dimension(400, 60);
         button.setPreferredSize(size);
         button.setMaximumSize(size);
         button.setMinimumSize(size);
-        // Color defaultColor = new Color(0, 0, 0);
         Color defaultColor = Color.WHITE;
         button.setOpaque(true);
         button.setBackground(defaultColor);
@@ -170,6 +188,7 @@ public class Menu implements State {
         button.setBorder(BorderFactory.createEmptyBorder());
         button.setContentAreaFilled(true);
         button.setFocusPainted(false);
+
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -195,11 +214,10 @@ public class Menu implements State {
         });
     }
 
-	@Override
-	public void handleCellClick(int row, int col) {
-		
-	}
-
+    @Override
+    public void handleCellClick(int row, int col) {
+        // Method not implemented for Menu state
+    }
 
     @Override
     public void setup(JFrame window, GameModeEnum gameMode) {
