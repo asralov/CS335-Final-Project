@@ -56,7 +56,8 @@ public class GameBoardTest {
 	    gameBoard.move(piece, 3, 2);
 	    
 	    assertNull(gameBoard.getPiece(2, 1)); 
-	    assertEquals(piece, gameBoard.getPiece(3, 2)); 
+	    assertEquals(piece.getColumn(), gameBoard.getPiece(3, 2).getColumn()); 
+	    assertEquals(piece.getRow(), gameBoard.getPiece(3, 2).getRow()); 
 	}
 	
 	  @Test
@@ -81,7 +82,7 @@ public class GameBoardTest {
 
 	        gameBoard.move(pathToEnd, Color.BLACK, false);
 	        
-	        Piece[][] p = gameBoard.getBoard();
+	        Piece[][] p = gameBoard.getBoardCopy();
 	        Piece[][] p1 = gameBoard.getBoardCopy();
 	        
 	        // Check if it is not the same object
@@ -105,7 +106,7 @@ public class GameBoardTest {
 
 	        gameBoard.move(pathToEnd, Color.BLACK, false);
 	        
-	        Piece[][] p = gameBoard.getBoard();
+	        Piece[][] p = gameBoard.getBoardCopy();
 	        Piece[][] p1 = gameBoard.getBoardCopy();
 	        
 	        // Check if its contents are the same
@@ -159,6 +160,23 @@ public class GameBoardTest {
 	      assertNull(gameBoard.getPiece(7, 0));
 	        
 	    }
+	  
+	    @Test
+	    void testSetBoard() {
+	        // Create a new board and initialize the new configuration
+	        GameBoard board = new GameBoard(); 
+	        Piece[][] newBoard = new Piece[8][8];
+	        newBoard[0][0] = new Piece(model.Color.WHITE, 0, 0); // White piece at (0, 0)
+	        newBoard[0][1] = new Piece(model.Color.BLACK, 0, 1); // Black piece at (0, 1)
+
+	        board.setBoard(newBoard);
+	        assertEquals(model.Color.WHITE, board.getBoardCopy()[0][0].getColor());
+	        assertEquals(model.Color.BLACK, board.getBoardCopy()[0][1].getColor());
+	        assertNull(board.getBoardCopy()[7][7]); 
+	        assertEquals(1, board.getBlackPieces());
+	       
+	    }
+	}
 
 
-}
+
