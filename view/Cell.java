@@ -136,7 +136,6 @@ public class Cell extends JButton {
      * @param highlight If true, highlights the cell; otherwise, resets the background color.
      */
     public void highlightCell(boolean highlight) {
-        System.out.println("HIGHLIGHTING CELL: " + this.x + " " + this.y);
 
         if (highlight) {
             this.setBackground(new Color(168, 66, 167)); // Highlight color
@@ -156,7 +155,6 @@ public class Cell extends JButton {
      * @param color     The color to use for highlighting.
      */
     public void highlightCell(boolean highlight, Color color) {
-        System.out.println("HIGHLIGHTING CELL: " + this.x + " " + this.y);
 
         if (highlight) {
             this.setBackground(color); // Custom highlight color

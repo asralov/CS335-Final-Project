@@ -22,7 +22,6 @@ public class SoundPlayer {
             clip.open(audioInputStream); // Open the audio input stream with the clip
 
             // Start playing the sound
-            System.out.println("Playing sound...");
             clip.start();
 
             // Block until the clip has finished playing
@@ -30,7 +29,7 @@ public class SoundPlayer {
                 Thread.sleep(50); // Sleep to prevent busy-waiting
             }
 
-            System.out.println("Sound playback finished.");
+
         } catch (UnsupportedAudioFileException e) {
             System.err.println("The specified audio file is not supported: " + soundName);
         } catch (IOException e) {

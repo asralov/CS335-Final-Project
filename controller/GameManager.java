@@ -104,7 +104,6 @@ public class GameManager {
 
 		// click on piece
 		if (clickedPiece != null) {
-			System.out.println("HERE");
 			if (!IsPieceMoveable(clickedPiece, GetMovablePieces()))
 				return;
 			this.gameState = GameStateEnum.Selected;
@@ -150,7 +149,6 @@ public class GameManager {
 				moveCountUntilDraw--;
 				for (ArrayList<int[]> path : possiblePaths) {
 					if (path.get(path.size() - 1)[0] == x && path.get(path.size() - 1)[1] == y) {
-						System.out.println("FOUND PATH, MOVING...");
 						ArrayList<Piece> histogram = board.move(path, selectedPiece.getColor(), selectedPiece.isKing());
 						SendPiecesToHistogram(histogram);
 					}
@@ -492,10 +490,8 @@ public class GameManager {
 	 * @returns String of the GameMangager
 	 */
 	public String toString() {
-		System.out.println("String: " + selectedPiece);
 		Piece[][] newBoard = board.getBoard();
 		String output = "   0 1 2 3 4 5 6 7\n   ----------------\n";
-		// System.out.println(newBoard[2][1]);
 
 		for (int i = 0; i < newBoard.length; i++) {
 			output += i + "| ";
