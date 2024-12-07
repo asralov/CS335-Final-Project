@@ -128,54 +128,54 @@ public class Move {
 			return false;
 		}
 	}
-	
-	private static void printBoard(Piece[][] board) {
-	    System.out.println("   0 1 2 3 4 5 6 7"); // Column indices
-	    System.out.println("   ----------------");
-
-	    for (int i = 0; i < board.length; i++) {
-	        System.out.print(i + "| "); 
-	        for (int j = 0; j < board[i].length; j++) {
-	            if (board[i][j] == null) {
-	                System.out.print(". "); 
-	            } else if (board[i][j].getColor() == Color.WHITE) {
-	                System.out.print(board[i][j].isKing() ? "W " : "w "); 
-	            } else if (board[i][j].getColor() == Color.BLACK) {
-	                System.out.print(board[i][j].isKing() ? "B " : "b "); 
-	            }
-	        }
-	        System.out.println(); 
-	    }
-	    System.out.println();
-	}
-
-
-
-
-	public static void main(String[] args) {
-		Piece[][] board = new Piece[8][8];
-		board[3][4] = new Piece(Color.WHITE, 3, 4);
-		//board[3][2] = new Piece(Color.WHITE, 3, 2);
-		board[4][1] = new Piece(Color.BLACK, 4, 1);
-		board[5][4] = null;  
-		board[6][7] = null;  
-
-		
-		Piece piece = board[4][1];
-		piece.ToKing();
-		
-		printBoard(board);
-		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
-
-		System.out.println("Possible moves for the piece:");
-		for (ArrayList<int[]> move : moves) {
-			System.out.print("Move path: ");
-			for (int[] step : move) {
-				System.out.print("(" + step[0] + ", " + step[1] + ") ");
-			}
-			System.out.println();
-		}
-	}
+//	
+//	private static void printBoard(Piece[][] board) {
+//	    System.out.println("   0 1 2 3 4 5 6 7"); // Column indices
+//	    System.out.println("   ----------------");
+//
+//	    for (int i = 0; i < board.length; i++) {
+//	        System.out.print(i + "| "); 
+//	        for (int j = 0; j < board[i].length; j++) {
+//	            if (board[i][j] == null) {
+//	                System.out.print(". "); 
+//	            } else if (board[i][j].getColor() == Color.WHITE) {
+//	                System.out.print(board[i][j].isKing() ? "W " : "w "); 
+//	            } else if (board[i][j].getColor() == Color.BLACK) {
+//	                System.out.print(board[i][j].isKing() ? "B " : "b "); 
+//	            }
+//	        }
+//	        System.out.println(); 
+//	    }
+//	    System.out.println();
+//	}
+//
+//
+//
+//
+//	public static void main(String[] args) {
+//		Piece[][] board = new Piece[8][8];
+//		board[3][4] = new Piece(Color.WHITE, 3, 4);
+//		//board[3][2] = new Piece(Color.WHITE, 3, 2);
+//		board[4][1] = new Piece(Color.BLACK, 4, 1);
+//		board[5][4] = null;  
+//		board[6][7] = null;  
+//
+//		
+//		Piece piece = board[4][1];
+//		piece.ToKing();
+//		
+//		printBoard(board);
+//		ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(piece, board);
+//
+//		System.out.println("Possible moves for the piece:");
+//		for (ArrayList<int[]> move : moves) {
+//			System.out.print("Move path: ");
+//			for (int[] step : move) {
+//				System.out.print("(" + step[0] + ", " + step[1] + ") ");
+//			}
+//			System.out.println();
+//		}
+//	}
 
 
 }
