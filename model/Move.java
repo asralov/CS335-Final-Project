@@ -8,7 +8,8 @@ import java.util.ArrayList;
  */
 public class Move {
 
-    static boolean isKing1 = true; // Temporary king status for recursive logic
+    // Temporary king status for recursive logic
+    static boolean isKing1 = true;
 
     /**
      * Calculates all possible moves for a given piece on the board.
@@ -37,11 +38,7 @@ public class Move {
         }
 
         // If capture moves are available, prioritize them
-        if (list_capture.isEmpty()) {
-            return list1; // Return normal moves if no captures
-        } else {
-            return list_capture; // Return capture moves if available
-        }
+        return list_capture.isEmpty() ? list1 : list_capture;
     }
 
     /**
@@ -163,78 +160,6 @@ public class Move {
      * @return {@code true} if the position is valid, {@code false} otherwise.
      */
     private static boolean validIndex(int x, int y) {
-        if (x >= 0 && x < 8) { // Check row boundaries
-            if (y >= 0 && y < 8) { // Check column boundaries
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Prints the current state of the board to the console for debugging.
-     *
-     * @param board The game board to print.
-     */
-    private static void printBoard(Piece[][] board) {
-        // Print column indices
-        System.out.println("   0 1 2 3 4 5 6 7"); 
-        System.out.println("   ----------------"); // Separator line
-
-        // Iterate through each row of the board
-        for (int i = 0; i < board.length; i++) {
-            System.out.print(i + "| "); // Print row index with a separator
-            for (int j = 0; j < board[i].length; j++) {
-                if (board[i][j] == null) {
-                    System.out.print(". "); // Print a dot for an empty cell
-                } else if (board[i][j].getColor() == Color.WHITE) {
-                    // Print 'W' for a white king, 'w' for a white normal piece
-                    System.out.print(board[i][j].isKing() ? "W " : "w ");
-                } else if (board[i][j].getColor() == Color.BLACK) {
-                    // Print 'B' for a black king, 'b' for a black normal piece
-                    System.out.print(board[i][j].isKing() ? "B " : "b ");
-                }
-            }
-            System.out.println(); // Move to the next row
-        }
-        System.out.println(); // Add an extra line after the board for readability
-    }
-
-    /**
-     * Main method for testing the Move logic and printing possible moves.
-     * Initializes a sample board, sets up a piece, and displays its possible moves.
-     *
-     * @param args Command-line arguments (not used).
-     */
-    public static void main(String[] args) {
-        // Initialize an empty board
-        Piece[][] board = new Piece[8][8];
-
-        // Place a white piece at position (3, 4)
-        board[3][4] = new Piece(Color.WHITE, 3, 4);
-
-        // Place a black piece at position (4, 1) and make it a king
-        board[4][1] = new Piece(Color.BLACK, 4, 1);
-        board[4][1].ToKing();
-
-        // Print the initial state of the board
-        printBoard(board);
-
-        // Get possible moves for the black king at (4, 1)
-        ArrayList<ArrayList<int[]>> moves = Move.getPossibleMoves(board[4][1], board);
-
-        // Print all possible moves for the black king
-        System.out.println("Possible moves for the piece:");
-        for (ArrayList<int[]> move : moves) {
-            System.out.print("Move path: ");
-            for (int[] step : move) {
-                // Print each step in the move path
-                System.out.print("(" + step[0] + ", " + step[1] + ") ");
-            }
-            System.out.println(); // Move to the next line for the next path
-        }
+        return x >= 0 && x < 8 && y >= 0 && y < 8; // Check boundaries
     }
 }
