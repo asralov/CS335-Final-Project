@@ -103,17 +103,6 @@ This project implements a Checkers game using the **Model-View-Controller (MVC)*
 - Background image and piece icons are stored in the `assets/` directory.
 - Replace or add new assets if needed.
 
-## Known Issues
-
-
-## Future Enhancements
-- **Multiplayer Support**: Add network-based multiplayer functionality.
-- **Advanced AI**: Implement a Minimax algorithm for better AI performance.
-- **Custom Board Sizes**: Allow players to configure board size and initial piece placement.
-
-## License
-This project is licensed under the MIT License.
-
 ## Contributors
 - **Amyra White, Suhani Surana, Abrorjon Asralov, Pulat Uralov** - Game logic, GUI design, unit testing
 - **Contributors Welcome!**
