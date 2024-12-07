@@ -30,12 +30,21 @@ public class Checkers {
     }
 
 
+    /**
+     * Method handles the click in the game_state 
+     * @param row the row of the click 
+     * @param col the col of the click 
+     */
     public static void handleCellClick(int row, int col) {
         if (game_state != null) {
             game_state.handleCellClick(row, col);
         }
     }
     
+    /**
+     * Method switches the state of the game 
+     * @param newState the new state of the game 
+     */
     public static void switchState(State newState) {
         game_state = newState;
         game_state.setup(window);
