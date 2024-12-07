@@ -88,6 +88,9 @@ public class Piece {
      * @param y The new column position of the piece.
      */
     public void setPosition(int x, int y) {
+        if (x < 0 || x >= 8 || y < 0 || y >= 8) {
+            throw new IllegalArgumentException("Invalid position");
+        }
         this.x = x;
         this.y = y;
     }

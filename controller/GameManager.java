@@ -104,6 +104,7 @@ public class GameManager {
 
 		// click on piece
 		if (clickedPiece != null) {
+			System.out.println("HERE");
 			if (!IsPieceMoveable(clickedPiece, GetMovablePieces()))
 				return;
 			this.gameState = GameStateEnum.Selected;
@@ -490,8 +491,9 @@ public class GameManager {
 	 * @returns String of the GameMangager
 	 */
 	public String toString() {
-		Piece[][] newBoard = board.getBoard();
+		Piece[][] newBoard = board.getBoardCopy();
 		String output = "   0 1 2 3 4 5 6 7\n   ----------------\n";
+		// System.out.println(newBoard[2][1]);
 
 		for (int i = 0; i < newBoard.length; i++) {
 			output += i + "| ";

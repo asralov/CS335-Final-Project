@@ -572,7 +572,7 @@ public class Game implements State, GameOverListener {
 
 			// Save the board state
 			writer.write("    \"board\": [\n");
-			Piece[][] board = gameBoard.getBoard();
+			Piece[][] board = gameBoard.getBoardCopy();
 			// go over each cell and build them up
 			for (int i = 0; i < board.length; i++) {
 				writer.write("      [");
